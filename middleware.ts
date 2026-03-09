@@ -47,11 +47,14 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/auth/callback') ||
     pathname.startsWith('/api')
 
+  // Build external origin from proxy headers
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host')
+  const proto = request.headers.get('x-forwarded-proto') || 'https'
+  const externalOrigin = host ? `${proto}://${host}` : request.nextUrl.origin
+
   // Protect all non-public routes
   if (!user && !isPublicRoute) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(`${externalOrigin}/login`)
   }
 
   // Redirect logged-in users away from auth pages (not onboarding)
@@ -59,9 +62,7 @@ export async function middleware(request: NextRequest) {
     user &&
     (pathname.startsWith('/login') || pathname.startsWith('/register'))
   ) {
-    const url = request.nextUrl.clone()
-    url.pathname = '/dashboard'
-    return NextResponse.redirect(url)
+    return NextResponse.redirect(`${externalOrigin}/dashboard`)
   }
 
   return supabaseResponse

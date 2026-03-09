@@ -1,8 +1,16 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
+function getExternalOrigin(request: NextRequest): string {
+  const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || ''
+  const proto = request.headers.get('x-forwarded-proto') || 'https'
+  if (host) return `${proto}://${host}`
+  return process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin
+}
+
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = request.nextUrl
+  const { searchParams } = request.nextUrl
+  const origin = getExternalOrigin(request)
   const code = searchParams.get('code')
   const next = searchParams.get('next') ?? '/onboarding'
 
@@ -55,8 +63,7 @@ export async function GET(request: NextRequest) {
       // First login — create org + user via service role
       await createUserProfile(user)
       // Redirect to onboarding
-      const redirectUrl = `${origin}/onboarding`
-      response = NextResponse.redirect(redirectUrl)
+      response = NextResponse.redirect(`${origin}/onboarding`)
       // Re-set cookies on the new response
       request.cookies.getAll().forEach((cookie) => {
         response.cookies.set(cookie.name, cookie.value)
@@ -66,8 +73,7 @@ export async function GET(request: NextRequest) {
 
     if (profile.onboarded_at) {
       // Already onboarded, go to dashboard
-      const redirectUrl = `${origin}/dashboard`
-      response = NextResponse.redirect(redirectUrl)
+      response = NextResponse.redirect(`${origin}/dashboard`)
       request.cookies.getAll().forEach((cookie) => {
         response.cookies.set(cookie.name, cookie.value)
       })
