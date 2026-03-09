@@ -22,7 +22,8 @@
     "expenses": "Expenses",
     "financial": "Financial",
     "export": "Export",
-    "settings": "Settings"
+    "settings": "Settings",
+    "signOut": "Sign out"
   },
   "dashboard": {
     "greeting": "Good morning, {name}",
@@ -623,6 +624,8 @@
       "submit": "Register",
       "hasAccount": "Already have an account?",
       "login": "Sign in",
+      "google": "Register with Google",
+      "microsoft": "Register with Microsoft",
       "passwordStrength": {
         "weak": "Weak",
         "medium": "Medium",

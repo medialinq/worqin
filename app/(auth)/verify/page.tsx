@@ -1,20 +1,22 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import Link from "next/link"
-import { useSearchParams } from "next/navigation"
-import { useTranslations } from "next-intl"
-import { Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react'
+import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
+import { useTranslations } from 'next-intl'
+import { Mail } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { resendVerification } from '../actions'
 
 export default function VerifyPage() {
-  const t = useTranslations("auth.verify")
+  const t = useTranslations('auth.verify')
   const searchParams = useSearchParams()
-  const email = searchParams.get("email") ?? ""
+  const email = searchParams.get('email') ?? ''
   const [resent, setResent] = useState(false)
 
   async function handleResend() {
-    // TODO: Supabase resend verification
+    if (!email) return
+    await resendVerification(email)
     setResent(true)
     setTimeout(() => setResent(false), 5000)
   }
@@ -26,9 +28,9 @@ export default function VerifyPage() {
       </div>
 
       <div className="space-y-2">
-        <h2 className="text-xl font-semibold text-foreground">{t("title")}</h2>
+        <h2 className="text-xl font-semibold text-foreground">{t('title')}</h2>
         <p className="text-sm text-muted-foreground">
-          {t("description", { email })}
+          {t('description', { email })}
         </p>
       </div>
 
@@ -39,11 +41,11 @@ export default function VerifyPage() {
           onClick={handleResend}
           disabled={resent}
         >
-          {resent ? "..." : t("resend")}
+          {resent ? '...' : t('resend')}
         </Button>
         <Link href="/login">
           <Button variant="outline" className="h-11 w-full">
-            {t("backToLogin")}
+            {t('backToLogin')}
           </Button>
         </Link>
       </div>

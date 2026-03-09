@@ -1,15 +1,16 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import Link from "next/link"
-import { useTranslations } from "next-intl"
-import { useForm } from "react-hook-form"
-import { z } from "zod/v4"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Mail } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState } from 'react'
+import Link from 'next/link'
+import { useTranslations } from 'next-intl'
+import { useForm } from 'react-hook-form'
+import { z } from 'zod/v4'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Mail } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { forgotPassword } from '../actions'
 
 const forgotSchema = z.object({
   email: z.email(),
@@ -18,8 +19,8 @@ const forgotSchema = z.object({
 type ForgotFormData = z.infer<typeof forgotSchema>
 
 export default function ForgotPasswordPage() {
-  const t = useTranslations("auth.forgotPassword")
-  const tLogin = useTranslations("auth.login")
+  const t = useTranslations('auth.forgotPassword')
+  const tLogin = useTranslations('auth.login')
   const [sent, setSent] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -34,9 +35,10 @@ export default function ForgotPasswordPage() {
   async function onSubmit(data: ForgotFormData) {
     setIsLoading(true)
     try {
-      // TODO: Supabase password reset
-      console.log("Forgot password:", data)
-      setSent(true)
+      const result = await forgotPassword(data)
+      if (result?.success) {
+        setSent(true)
+      }
     } catch {
       // handled
     } finally {
@@ -47,7 +49,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="space-y-6">
       <div className="text-center">
-        <h2 className="text-xl font-semibold text-foreground">{t("title")}</h2>
+        <h2 className="text-xl font-semibold text-foreground">{t('title')}</h2>
       </div>
 
       {sent ? (
@@ -55,10 +57,10 @@ export default function ForgotPasswordPage() {
           <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success/10">
             <Mail className="size-8 text-success" />
           </div>
-          <p className="text-sm text-muted-foreground">{t("sent")}</p>
+          <p className="text-sm text-muted-foreground">{t('sent')}</p>
           <Link href="/login">
             <Button variant="outline" className="h-11 w-full">
-              {tLogin("title")}
+              {tLogin('title')}
             </Button>
           </Link>
         </div>
@@ -66,7 +68,7 @@ export default function ForgotPasswordPage() {
         <>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">{tLogin("email")}</Label>
+              <Label htmlFor="email">{tLogin('email')}</Label>
               <div className="relative">
                 <Mail className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
                 <Input
@@ -75,22 +77,31 @@ export default function ForgotPasswordPage() {
                   placeholder="naam@bedrijf.nl"
                   className="h-11 pl-10"
                   aria-invalid={!!errors.email}
-                  {...register("email")}
+                  {...register('email')}
                 />
               </div>
               {errors.email && (
-                <p className="text-sm text-destructive">{errors.email.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email.message}
+                </p>
               )}
             </div>
 
-            <Button type="submit" className="h-11 w-full" disabled={isLoading}>
-              {isLoading ? "..." : t("submit")}
+            <Button
+              type="submit"
+              className="h-11 w-full"
+              disabled={isLoading}
+            >
+              {isLoading ? '...' : t('submit')}
             </Button>
           </form>
 
           <p className="text-center text-sm">
-            <Link href="/login" className="text-muted-foreground hover:text-foreground">
-              {tLogin("title")}
+            <Link
+              href="/login"
+              className="text-muted-foreground hover:text-foreground"
+            >
+              {tLogin('title')}
             </Link>
           </p>
         </>

@@ -22,7 +22,8 @@
     "expenses": "Onkosten",
     "financial": "Financieel",
     "export": "Export",
-    "settings": "Instellingen"
+    "settings": "Instellingen",
+    "signOut": "Uitloggen"
   },
   "dashboard": {
     "greeting": "Goedemorgen, {name}",
@@ -623,6 +624,8 @@
       "submit": "Registreren",
       "hasAccount": "Al een account?",
       "login": "Log in",
+      "google": "Registreer met Google",
+      "microsoft": "Registreer met Microsoft",
       "passwordStrength": {
         "weak": "Zwak",
         "medium": "Gemiddeld",

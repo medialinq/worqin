@@ -20,6 +20,12 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Progress } from "@/components/ui/progress"
 import { GoogleIcon, MicrosoftIcon } from "@/components/auth/oauth-icons"
+import {
+  saveWelcomeData,
+  createFirstClient,
+  completeOnboarding as completeOnboardingAction,
+  startFirstTimer,
+} from "./actions"
 
 const TOTAL_STEPS = 5
 
@@ -351,16 +357,22 @@ export default function OnboardingPage() {
   const [step, setStep] = useState(1)
   const [welcomeData, setWelcomeData] = useState<WelcomeData>()
   const [clientName, setClientName] = useState("")
+  const [clientId, setClientId] = useState<string>()
   const [showConfetti, setShowConfetti] = useState(false)
 
   const progressValue = (step / TOTAL_STEPS) * 100
 
-  const completeOnboarding = useCallback(() => {
+  const completeOnboarding = useCallback(async (withTimer?: boolean) => {
+    if (withTimer) {
+      await startFirstTimer(clientId)
+    } else {
+      await completeOnboardingAction()
+    }
     setShowConfetti(true)
     setTimeout(() => {
       router.push("/dashboard")
     }, 2500)
-  }, [router])
+  }, [router, clientId])
 
   return (
     <div className="flex min-h-dvh flex-col bg-app-bg">
@@ -407,19 +419,28 @@ export default function OnboardingPage() {
               {step === 1 && (
                 <StepWelcome
                   defaultValues={welcomeData}
-                  onNext={(data) => {
+                  onNext={async (data) => {
                     setWelcomeData(data)
+                    await saveWelcomeData(data)
                     setStep(2)
                   }}
                 />
               )}
               {step === 2 && (
                 <StepClient
-                  onNext={(data) => {
-                    setClientName(data.clientName)
+                  onNext={async (data) => {
+                    const result = await createFirstClient(data)
+                    if (result?.client) {
+                      setClientName(result.client.name)
+                      setClientId(result.client.id)
+                    }
                     setStep(3)
                   }}
-                  onUseDefault={() => {
+                  onUseDefault={async () => {
+                    const result = await createFirstClient({ clientName: "Overig" })
+                    if (result?.client) {
+                      setClientId(result.client.id)
+                    }
                     setClientName("Overig")
                     setStep(3)
                   }}
@@ -440,8 +461,8 @@ export default function OnboardingPage() {
               {step === 5 && (
                 <StepTimer
                   clientName={clientName}
-                  onStart={completeOnboarding}
-                  onDashboard={completeOnboarding}
+                  onStart={() => completeOnboarding(true)}
+                  onDashboard={() => completeOnboarding(false)}
                 />
               )}
             </>

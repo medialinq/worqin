@@ -19,12 +19,14 @@ import {
   Sun,
   Moon,
   Menu,
+  LogOut,
 } from "lucide-react"
 import { BRAND } from "@/config/brand"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { mockCalendarEvents } from "@/lib/mock"
+import { signOut } from "@/app/(auth)/actions"
 import {
   Tooltip,
   TooltipTrigger,
@@ -216,6 +218,22 @@ function SidebarNav({
               )}
             </Button>
           )}
+        </div>
+
+        {/* Sign out */}
+        <div className={cn("mt-1", collapsed && "flex justify-center")}>
+          <Button
+            variant="ghost"
+            size={collapsed ? "icon" : "default"}
+            onClick={() => signOut()}
+            className={cn(
+              "w-full justify-start gap-3 text-muted-foreground hover:text-destructive",
+              collapsed && "w-auto justify-center"
+            )}
+          >
+            <LogOut className="size-5" />
+            {!collapsed && <span className="text-sm">{t("signOut")}</span>}
+          </Button>
         </div>
       </div>
     </div>
