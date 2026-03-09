@@ -6,8 +6,11 @@ import { createClient } from '@/lib/supabase/server'
 
 async function getOrigin() {
   const h = await headers()
-  const origin = h.get('origin') || h.get('referer')?.replace(/\/[^/]*$/, '') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-  return origin.replace(/\/$/, '')
+  // Prefer x-forwarded-host (set by Traefik), then host header
+  const host = h.get('x-forwarded-host') || h.get('host') || ''
+  const proto = h.get('x-forwarded-proto') || 'https'
+  if (host) return `${proto}://${host}`
+  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 }
 
 export async function login(formData: { email: string; password: string }) {
