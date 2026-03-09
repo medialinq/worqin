@@ -1,0 +1,703 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "add": "Add",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "back": "Back",
+    "next": "Next",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "timeline": "Timeline",
+    "agenda": "Agenda",
+    "clients": "Clients",
+    "expenses": "Expenses",
+    "financial": "Financial",
+    "export": "Export",
+    "settings": "Settings"
+  },
+  "dashboard": {
+    "greeting": "Good morning, {name}",
+    "greetingAfternoon": "Good afternoon, {name}",
+    "greetingEvening": "Good evening, {name}",
+    "weekHours": "Hours this week",
+    "yearProgress": "1,225 hours progress",
+    "revenueMTD": "Revenue this month",
+    "thisMonth": "this month",
+    "hours": "hours",
+    "direct": "Direct",
+    "indirect": "Indirect",
+    "remaining": "Remaining",
+    "hoursShort": "h",
+    "vsLastMonth": "vs last month",
+    "viewAll": "View all",
+    "timeAgo": "{minutes} min ago",
+    "hoursAgo": "{hours} hours ago",
+    "timer": {
+      "start": "Start timer",
+      "stop": "Stop timer",
+      "empty": "No active timer",
+      "active": "Timer running",
+      "startDescription": "Start a timer to track your workday"
+    },
+    "ai": {
+      "title": "AI Assistant",
+      "dismiss": "Hide for today",
+      "suggestion": "You have {count} appointments today without a linked timer. Would you like to link them now?"
+    },
+    "today": {
+      "title": "Today",
+      "agenda": "Agenda",
+      "tasks": "Tasks",
+      "noEvents": "No appointments today",
+      "noTasks": "No tasks today"
+    },
+    "cashflow": {
+      "title": "Cash flow",
+      "next90days": "Next 90 days",
+      "expectedRevenue": "Expected revenue",
+      "fixedExpenses": "Fixed costs",
+      "expectedBalance": "Expected balance",
+      "viewDetails": "View details"
+    },
+    "recentActivity": {
+      "title": "Recent activity",
+      "empty": "No time entries yet",
+      "minuteShort": "m",
+      "hourShort": "h",
+      "dayShort": "d"
+    },
+    "empty": {
+      "title": "Welcome to {brand}",
+      "description": "Start tracking your work hours",
+      "cta": "Start your first timer"
+    }
+  },
+  "timer": {
+    "title": "Timeline",
+    "day": "Day",
+    "week": "Week",
+    "client": "Client",
+    "project": "Project",
+    "type": "Type",
+    "description": "Description",
+    "backfill": {
+      "label": "Backfill",
+      "title": "Backfill time",
+      "description": "Register time retroactively",
+      "startTime": "Start time",
+      "endTime": "End time",
+      "date": "Date"
+    },
+    "templates": {
+      "label": "Templates",
+      "title": "Templates",
+      "start": "Start",
+      "favorite": "Favorite",
+      "empty": "No templates"
+    },
+    "exportReady": "Export ready",
+    "types": {
+      "clientWork": "Client work",
+      "businessWork": "Business work",
+      "billable": "Billable",
+      "nonBillable": "Non-billable",
+      "proBono": "Pro bono",
+      "admin": "Administration",
+      "sales": "Sales",
+      "travel": "Travel time",
+      "learning": "Training",
+      "other": "Other"
+    },
+    "gap": {
+      "suggestion": "Unregistered time",
+      "fill": "Fill time"
+    },
+    "budget": {
+      "warning": "Project budget almost reached"
+    },
+    "markExportReady": "Mark as export ready",
+    "ai": {
+      "suggestion": "AI suggestion",
+      "mockSuggestion": "Worked on hero section and navigation components for the website redesign",
+      "accept": "Accept",
+      "dismiss": "Dismiss"
+    },
+    "currentTime": "Current time",
+    "noEntries": "No entries for this day",
+    "weekTotal": "Week total",
+    "hoursShort": "h",
+    "minutesShort": "m",
+    "dayLabels": {
+      "mon": "Mon",
+      "tue": "Tue",
+      "wed": "Wed",
+      "thu": "Thu",
+      "fri": "Fri",
+      "sat": "Sat",
+      "sun": "Sun"
+    },
+    "empty": {
+      "title": "No time entries",
+      "description": "Start your first timer to track your workday",
+      "cta": "Start timer"
+    }
+  },
+  "agenda": {
+    "title": "Agenda",
+    "week": "Week",
+    "prevWeek": "Previous week",
+    "nextWeek": "Next week",
+    "today": "Today",
+    "unconfirmed": "Unconfirmed",
+    "confirmed": "Confirmed",
+    "confirm": "Confirm",
+    "billable": "Billable",
+    "nonBillable": "Non-billable",
+    "suggestedClient": "Suggestion: {client}",
+    "acceptSuggestion": "Accept",
+    "accounts": "Accounts",
+    "googleCalendar": "Google Calendar",
+    "outlook": "Outlook",
+    "location": "Location",
+    "client": "Client",
+    "selectClient": "Select client",
+    "noClient": "No client",
+    "type": "Type",
+    "confirmEvent": "Confirm appointment",
+    "confirmEventDescription": "Choose whether this appointment is billable and link a client",
+    "endOfDay": {
+      "title": "End of day overview",
+      "description": "The following appointments have no linked timer",
+      "confirmAll": "Confirm {count} hours",
+      "selectAll": "Select all",
+      "noUnconfirmed": "No unconfirmed appointments"
+    },
+    "connect": {
+      "title": "Connect calendar",
+      "description": "Connect your Google or Outlook calendar to see appointments",
+      "google": "Google Calendar",
+      "outlook": "Outlook"
+    },
+    "tokenExpiry": {
+      "warning": "Your {provider} connection expires in {days} days",
+      "action": "Renew connection"
+    },
+    "empty": {
+      "title": "No calendar connected",
+      "description": "Connect your Google or Outlook calendar to see appointments",
+      "cta": "Connect calendar"
+    },
+    "skeleton": {
+      "loading": "Loading agenda..."
+    }
+  },
+  "clients": {
+    "title": "Clients",
+    "addClient": "Add client",
+    "editClient": "Edit client",
+    "active": "Active",
+    "archived": "Archived",
+    "favorite": "Favorite",
+    "details": "Details",
+    "overview": "Overview",
+    "analysisTab": "Analysis",
+    "projectsTab": "Projects",
+    "effectiveRate": "Effective hourly rate",
+    "search": "Search clients...",
+    "projectCount": "{count, plural, =0 {No projects} =1 {1 project} other {# projects}}",
+    "hourlyRateShort": "\u20ac{rate}/h",
+    "totalHours": "Total hours",
+    "totalRevenue": "Total revenue",
+    "activeProjects": "Active projects",
+    "recentEntries": "Recent time entries",
+    "noEntries": "No time entries found",
+    "noProjects": "No projects yet",
+    "noArchived": "No archived clients",
+    "clientInfo": "Client details",
+    "dialog": {
+      "addDescription": "Fill in the details to add a new client",
+      "editDescription": "Update the client details"
+    },
+    "fields": {
+      "name": "Name",
+      "email": "Email",
+      "color": "Color",
+      "hourlyRate": "Hourly rate",
+      "kmRate": "Mileage rate",
+      "minimumMinutes": "Minimum minutes",
+      "jorttId": "Jortt ID",
+      "client": "Client",
+      "projectName": "Project name",
+      "description": "Description",
+      "budgetHours": "Budget hours",
+      "projectHourlyRate": "Custom hourly rate",
+      "projectHourlyRateHint": "Overrides client rate"
+    },
+    "budget": {
+      "label": "Budget",
+      "warning": "Budget almost reached",
+      "exceeded": "Budget exceeded"
+    },
+    "project": {
+      "add": "Add project",
+      "edit": "Edit project",
+      "budgetUsed": "{used} / {total} h ({percentage}%)",
+      "budgetWarning": "Budget almost reached",
+      "overBudget": "Budget exceeded",
+      "noBudget": "No budget set"
+    },
+    "analysis": {
+      "title": "Analysis",
+      "effectiveRate": "Effective hourly rate",
+      "declaredRate": "Declared rate",
+      "breakdown": "Hours breakdown",
+      "hoursPerProject": "Hours per project",
+      "billable": "Billable",
+      "nonBillable": "Non-billable",
+      "proBono": "Pro bono"
+    },
+    "externalLinks": "External integrations",
+    "empty": {
+      "title": "No clients yet",
+      "description": "Add your first client to get started",
+      "cta": "Add client"
+    }
+  },
+  "expenses": {
+    "title": "Expenses",
+    "addExpense": "Add expense",
+    "editExpense": "Edit expense",
+    "receipt": "Receipt",
+    "mileage": "Mileage",
+    "quarter": "Quarter",
+    "exportReady": "Export ready",
+    "total": "Total",
+    "quarterLabel": "Q{q} {year}",
+    "vatLabel": "{rate}% VAT",
+    "calculated": "€{amount} calculated",
+    "bulkExportReady": "Mark selection as export ready",
+    "tabs": {
+      "receipt": "Receipt",
+      "mileage": "Mileage"
+    },
+    "upload": "Upload receipt",
+    "fileSelected": "File selected",
+    "kmRate": "€0.23/km",
+    "noExpensesInPeriod": "No expenses in this period",
+    "fields": {
+      "description": "Description",
+      "amount": "Amount",
+      "date": "Date",
+      "vatRate": "VAT rate",
+      "from": "From",
+      "to": "To",
+      "km": "Kilometers",
+      "client": "Client",
+      "project": "Project"
+    },
+    "empty": {
+      "title": "No expenses yet",
+      "description": "Add your first receipt or mileage entry",
+      "cta": "Add expense"
+    }
+  },
+  "financial": {
+    "cashflow": {
+      "title": "Cash flow",
+      "forecast": "Expected cash flow",
+      "revenue": "Expected revenue",
+      "expenses": "Fixed costs",
+      "tax": "Tax reserve",
+      "balance": "Balance",
+      "buffer": "Safety buffer",
+      "vatMoment": "VAT payment",
+      "monthLabel": "Month",
+      "netBalance": "Net balance",
+      "vatPayment": "VAT payment {period}",
+      "aboveBuffer": "Above safety buffer",
+      "belowBuffer": "Below safety buffer",
+      "negative": "Negative balance",
+      "breakEven": "Break-even",
+      "bufferLine": "Safety buffer",
+      "settings": {
+        "title": "Cash flow settings",
+        "monthlyExpenses": "Monthly fixed costs",
+        "taxPercentage": "Tax reserve %",
+        "currentBalance": "Current balance",
+        "safetyBuffer": "Safety buffer",
+        "vatFrequency": "VAT frequency",
+        "save": "Save",
+        "vatOptions": {
+          "monthly": "Monthly",
+          "quarterly": "Quarterly",
+          "yearly": "Yearly"
+        }
+      }
+    },
+    "leave": {
+      "title": "Leave & Sick days",
+      "addLeave": "Register leave",
+      "date": "Date",
+      "type": "Type",
+      "notes": "Notes",
+      "year": "Year overview {year}",
+      "noLeave": "No leave registered",
+      "types": {
+        "vacation": "Vacation",
+        "sick": "Sick leave",
+        "maternity": "Maternity leave",
+        "publicHoliday": "Public holiday",
+        "other": "Other"
+      },
+      "taxContext": {
+        "vacation": "Does NOT count towards 1,225 hours criterion",
+        "sick": "Does NOT count towards 1,225 hours criterion",
+        "maternity": "DOES count towards 1,225 hours criterion (max 16 weeks)",
+        "publicHoliday": "Does NOT count towards 1,225 hours criterion",
+        "other": "Does NOT count towards 1,225 hours criterion"
+      },
+      "overview": {
+        "workdays": "Work days",
+        "offDays": "Days off",
+        "sickDays": "Sick days"
+      },
+      "empty": {
+        "title": "No leave registered yet",
+        "description": "Register vacation, sick leave or other time off",
+        "cta": "Register leave"
+      }
+    }
+  },
+  "export": {
+    "title": "Export",
+    "period": "Period",
+    "periodLabel": "Period",
+    "clientFilter": "Client filter",
+    "allClients": "All clients",
+    "items": "Items to export",
+    "timeEntries": "{count, plural, =1 {1 time entry} other {# time entries}}",
+    "totalHours": "{hours} hours",
+    "totalAmount": "{amount}",
+    "expenses": "{count, plural, =1 {1 expense} other {# expenses}}",
+    "total": "Total",
+    "preview": "PDF preview",
+    "pdfPreview": "PDF Preview",
+    "csvDownload": "CSV Download",
+    "exportJortt": "Export to Jortt",
+    "download": "CSV download",
+    "jortt": "Export to Jortt",
+    "confirmExport": "Export {count} items to Jortt?",
+    "confirmExportDescription": "This will export the selected items to your Jortt administration.",
+    "csvDownloaded": "CSV downloaded",
+    "viewInJortt": "View in Jortt",
+    "backToOverview": "Back to overview",
+    "retryExport": "Retry export",
+    "failedItems": "{failed} of {total} items failed",
+    "exportDate": "Export date",
+    "client": "Client",
+    "project": "Project",
+    "date": "Date",
+    "hours": "Hours",
+    "rate": "Rate",
+    "amount": "Amount",
+    "description": "Description",
+    "noClient": "No client",
+    "noProject": "No project",
+    "success": {
+      "title": "Export successful",
+      "description": "{count} items exported"
+    },
+    "error": {
+      "title": "Export partially failed",
+      "description": "Some items could not be exported"
+    },
+    "empty": {
+      "title": "Nothing to export",
+      "description": "Mark time entries as export ready in the timeline",
+      "cta": "Go to timeline"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "description": "Manage your account, preferences and integrations",
+    "profile": {
+      "title": "Profile",
+      "description": "Your name, email and profile picture",
+      "name": "Name",
+      "email": "Email address",
+      "emailHint": "Change via support",
+      "avatar": "Profile picture",
+      "changePhoto": "Change photo",
+      "saved": "Profile saved"
+    },
+    "preferences": {
+      "title": "Work preferences",
+      "description": "Weekly goal, rounding and default hour type",
+      "weeklyGoal": "Weekly goal (hours)",
+      "rounding": "Rounding",
+      "defaultType": "Default hour type",
+      "roundingOptions": {
+        "none": "None",
+        "min15": "15 minutes",
+        "min30": "30 minutes",
+        "min60": "60 minutes"
+      },
+      "saved": "Preferences saved"
+    },
+    "notifications": {
+      "title": "Notifications",
+      "description": "When and how you receive notifications",
+      "enabled": "Notifications on",
+      "window": "Time window",
+      "windowFrom": "From",
+      "windowTo": "To",
+      "interval": "Interval",
+      "intervalOptions": {
+        "min30": "Every 30 minutes",
+        "min60": "Every hour",
+        "min90": "Every 90 minutes",
+        "min120": "Every 2 hours"
+      },
+      "weekdaysOnly": "Weekdays only",
+      "nudgeTypes": "AI notifications",
+      "nudge": {
+        "gapReminder": "Unregistered time reminder",
+        "endOfDay": "End of day overview",
+        "weeklyReport": "Weekly report",
+        "budgetWarning": "Budget warning",
+        "complianceAlert": "Compliance alert"
+      },
+      "saved": "Notification settings saved"
+    },
+    "integrations": {
+      "title": "Integrations",
+      "description": "Calendar and accounting integrations",
+      "agenda": "Calendar",
+      "jortt": "Jortt",
+      "connected": "Connected",
+      "disconnected": "Not connected",
+      "error": "Connection error",
+      "connect": "Connect",
+      "disconnect": "Disconnect",
+      "reconnect": "Reconnect",
+      "lastSync": "Last sync",
+      "connectJortt": "Connect your Jortt account",
+      "jorttDescription": "Export hours and expenses to your Jortt administration",
+      "googleCalendar": "Google Calendar",
+      "outlook": "Outlook",
+      "agendaDescription": "Sync appointments from your calendar",
+      "noConnections": "No calendar connected"
+    },
+    "compliance": {
+      "title": "Compliance",
+      "description": "DBA Act diversity score and analysis",
+      "dbaScore": "DBA Act Score",
+      "diversityScore": "Diversity score",
+      "scores": {
+        "good": "Good",
+        "medium": "Average",
+        "low": "Low"
+      },
+      "warnings": {
+        "highConcentration": "More than 70% of your hours go to one client",
+        "noIndirect": "You have no indirect hours registered"
+      },
+      "downloadPdf": "Download audit PDF",
+      "hoursPerClient": "Hours per client",
+      "period": "Period",
+      "periodOptions": {
+        "days30": "30 days",
+        "days60": "60 days",
+        "days90": "90 days",
+        "days180": "180 days",
+        "days365": "365 days"
+      },
+      "thresholdLine": "70% threshold",
+      "hours": "hours",
+      "activeClients": "Active clients",
+      "largestClient": "Largest client",
+      "indirectHours": "Indirect hours"
+    },
+    "templates": {
+      "title": "Timer templates",
+      "description": "Quickly start timers with presets",
+      "add": "Add template",
+      "edit": "Edit template",
+      "favorite": "Favorite",
+      "usageCount": "Times used",
+      "empty": "No templates yet",
+      "emptyDescription": "Create templates to start timers faster",
+      "name": "Name",
+      "client": "Client",
+      "clientOptional": "Client (optional)",
+      "project": "Project",
+      "projectOptional": "Project (optional)",
+      "type": "Type",
+      "defaultDuration": "Default duration (minutes)",
+      "color": "Color",
+      "deleteConfirm": "Are you sure you want to delete this template?"
+    },
+    "subscription": {
+      "title": "Subscription",
+      "description": "Your current plan and billing details",
+      "currentPlan": "Current plan",
+      "plans": {
+        "trial": "Trial",
+        "starter": "Starter",
+        "pro": "Pro",
+        "team": "Team"
+      },
+      "features": {
+        "trialFeatures": "14 days free, all Pro features",
+        "starterFeatures": "Time tracking, 3 clients, basic export",
+        "proFeatures": "Unlimited clients, AI assistant, integrations, compliance",
+        "teamFeatures": "Everything in Pro + team members, reports, SSO"
+      },
+      "upgrade": "Upgrade",
+      "manage": "Manage subscription",
+      "current": "Current"
+    },
+    "dangerZone": {
+      "title": "Danger zone",
+      "description": "Irreversible actions for your account",
+      "deleteAccount": "Delete account",
+      "deleteWarning": "This cannot be undone. Your account will be permanently deleted after 30 days.",
+      "confirmDelete": "Type DELETE to confirm",
+      "confirmWord": "DELETE",
+      "deleteButton": "Permanently delete account"
+    }
+  },
+  "pages": {
+    "dashboard": "Dashboard",
+    "timeline": "Timeline",
+    "agenda": "Agenda",
+    "clients": "Clients",
+    "clientDetail": "Client detail",
+    "expenses": "Expenses",
+    "cashflow": "Cash flow",
+    "leave": "Leave",
+    "export": "Export",
+    "settings": "Settings",
+    "account": "Account",
+    "agendaSettings": "Agenda settings",
+    "compliance": "Compliance",
+    "templates": "Templates"
+  },
+  "sidebar": {
+    "openMenu": "Open menu",
+    "expandSidebar": "Expand sidebar",
+    "collapseSidebar": "Collapse sidebar"
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "email": "Email address",
+      "password": "Password",
+      "submit": "Sign in",
+      "google": "Sign in with Google",
+      "microsoft": "Sign in with Microsoft",
+      "forgotPassword": "Forgot password?",
+      "noAccount": "Don't have an account?",
+      "register": "Register",
+      "errors": {
+        "invalidCredentials": "Invalid email or password",
+        "accountNotFound": "Account not found",
+        "generic": "Something went wrong. Please try again."
+      }
+    },
+    "register": {
+      "title": "Create account",
+      "name": "Name",
+      "email": "Email address",
+      "password": "Password",
+      "company": "Company name",
+      "submit": "Register",
+      "hasAccount": "Already have an account?",
+      "login": "Sign in",
+      "passwordStrength": {
+        "weak": "Weak",
+        "medium": "Medium",
+        "strong": "Strong"
+      }
+    },
+    "verify": {
+      "title": "Check your inbox",
+      "description": "We sent a verification link to {email}",
+      "resend": "Didn't receive an email? Resend",
+      "backToLogin": "Back to sign in"
+    },
+    "forgotPassword": {
+      "title": "Forgot password",
+      "submit": "Send reset link",
+      "sent": "We sent a reset link to your email address"
+    },
+    "resetPassword": {
+      "title": "Set new password",
+      "newPassword": "New password",
+      "confirm": "Confirm password",
+      "submit": "Save password",
+      "success": "Password changed"
+    },
+    "or": "or"
+  },
+  "onboarding": {
+    "step": "Step {current} of {total}",
+    "next": "Next",
+    "skip": "Skip",
+    "finish": "Finish",
+    "welcome": {
+      "title": "Welcome to {brand}!",
+      "name": "Your name",
+      "company": "Company name"
+    },
+    "client": {
+      "title": "Add your first client",
+      "name": "Client name",
+      "email": "Email (optional)",
+      "rate": "Hourly rate (optional)",
+      "useDefault": "Use \"Other\" as default client"
+    },
+    "agenda": {
+      "title": "Connect your calendar",
+      "google": "Google Calendar",
+      "outlook": "Outlook"
+    },
+    "jortt": {
+      "title": "Connect your accounting",
+      "connect": "Connect Jortt"
+    },
+    "timer": {
+      "title": "Start your first timer!",
+      "start": "Start timer",
+      "goDashboard": "Go to dashboard"
+    },
+    "complete": "All set!"
+  },
+  "errors": {
+    "notFound": {
+      "title": "Page not found",
+      "description": "The page you are looking for does not exist or has been moved.",
+      "goHome": "Go to dashboard"
+    },
+    "generic": {
+      "title": "Something went wrong",
+      "description": "An unexpected error occurred.",
+      "retry": "Try again",
+      "goHome": "Go to dashboard"
+    }
+  },
+  "theme": {
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  }
+}

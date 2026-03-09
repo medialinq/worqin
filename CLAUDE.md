@@ -14,9 +14,9 @@ Multi-tenant SaaS werkplek voor Nederlandse ZZP'ers. Worqin is een **zelfstandig
 
 | Bestand | Bevat | Lezen wanneer |
 |---|---|---|
-| `agents/PLAN.md` | Productscope, features, roadmap, bouwopdrachten | Altijd als eerste bij een nieuwe taak |
-| `agents/TECH.md` | Stack, Supabase patronen, schema, API-patronen | Bij elke backend, database of auth taak |
-| `agents/DESIGN.md` | Kleuren, typografie, componenten, layout | Bij elke frontend of UI taak |
+| `.claude/agents/PLAN.md` | Productscope, features, roadmap, bouwopdrachten | Altijd als eerste bij een nieuwe taak |
+| `.claude/agents/TECH.md` | Stack, Supabase patronen, schema, API-patronen | Bij elke backend, database of auth taak |
+| `.claude/agents/DESIGN.md` | Kleuren, typografie, componenten, layout | Bij elke frontend of UI taak |
 
 ---
 
@@ -110,7 +110,7 @@ worqin/
 ├── messages/nl.json + en.json
 ├── middleware.ts
 ├── supabase/migrations/
-└── agents/
+└── .claude/agents/
 ```
 
 ---
@@ -157,7 +157,7 @@ worqin/
 
 ## TODO bijhouden
 
-Na elke voltooide taak: update `agents/TODO.md` (zet `[ ]` op `[x]`).
+Na elke voltooide taak: update `.claude/agents/TODO.md` (zet `[ ]` op `[x]`).
 
 ---
 

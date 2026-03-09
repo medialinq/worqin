@@ -1,0 +1,703 @@
+{
+  "common": {
+    "save": "Opslaan",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "edit": "Bewerken",
+    "add": "Toevoegen",
+    "search": "Zoeken",
+    "loading": "Laden...",
+    "error": "Er is iets misgegaan",
+    "retry": "Opnieuw proberen",
+    "back": "Terug",
+    "next": "Volgende",
+    "close": "Sluiten",
+    "confirm": "Bevestigen"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "timeline": "Tijdlijn",
+    "agenda": "Agenda",
+    "clients": "Klanten",
+    "expenses": "Onkosten",
+    "financial": "Financieel",
+    "export": "Export",
+    "settings": "Instellingen"
+  },
+  "dashboard": {
+    "greeting": "Goedemorgen, {name}",
+    "greetingAfternoon": "Goedemiddag, {name}",
+    "greetingEvening": "Goedenavond, {name}",
+    "weekHours": "Uren deze week",
+    "yearProgress": "1.225 uren voortgang",
+    "revenueMTD": "Omzet deze maand",
+    "thisMonth": "deze maand",
+    "hours": "uur",
+    "direct": "Direct",
+    "indirect": "Indirect",
+    "remaining": "Resterend",
+    "hoursShort": "u",
+    "vsLastMonth": "vs vorige maand",
+    "viewAll": "Bekijk alles",
+    "timeAgo": "{minutes} min geleden",
+    "hoursAgo": "{hours} uur geleden",
+    "timer": {
+      "start": "Start timer",
+      "stop": "Stop timer",
+      "empty": "Geen actieve timer",
+      "active": "Timer loopt",
+      "startDescription": "Start een timer om je werkdag te registreren"
+    },
+    "ai": {
+      "title": "AI Assistent",
+      "dismiss": "Verberg voor vandaag",
+      "suggestion": "Je hebt vandaag {count} afspraken zonder gekoppelde timer. Wil je deze nu koppelen?"
+    },
+    "today": {
+      "title": "Vandaag",
+      "agenda": "Agenda",
+      "tasks": "Taken",
+      "noEvents": "Geen afspraken vandaag",
+      "noTasks": "Geen taken vandaag"
+    },
+    "cashflow": {
+      "title": "Cashflow",
+      "next90days": "Komende 90 dagen",
+      "expectedRevenue": "Verwachte omzet",
+      "fixedExpenses": "Vaste lasten",
+      "expectedBalance": "Verwacht saldo",
+      "viewDetails": "Bekijk details"
+    },
+    "recentActivity": {
+      "title": "Recente activiteit",
+      "empty": "Nog geen tijdregistraties",
+      "minuteShort": "m",
+      "hourShort": "u",
+      "dayShort": "d"
+    },
+    "empty": {
+      "title": "Welkom bij {brand}",
+      "description": "Begin met het registreren van je werkuren",
+      "cta": "Start je eerste timer"
+    }
+  },
+  "timer": {
+    "title": "Tijdlijn",
+    "day": "Dag",
+    "week": "Week",
+    "client": "Klant",
+    "project": "Project",
+    "type": "Type",
+    "description": "Omschrijving",
+    "backfill": {
+      "label": "Terugboeken",
+      "title": "Tijd terugboeken",
+      "description": "Registreer tijd achteraf",
+      "startTime": "Starttijd",
+      "endTime": "Eindtijd",
+      "date": "Datum"
+    },
+    "templates": {
+      "label": "Templates",
+      "title": "Templates",
+      "start": "Start",
+      "favorite": "Favoriet",
+      "empty": "Geen templates"
+    },
+    "exportReady": "Exportklaar",
+    "types": {
+      "clientWork": "Klantwerk",
+      "businessWork": "Ondernemerswerk",
+      "billable": "Declarabel",
+      "nonBillable": "Niet-declarabel",
+      "proBono": "Pro bono",
+      "admin": "Administratie",
+      "sales": "Acquisitie",
+      "travel": "Reistijd",
+      "learning": "Bijscholing",
+      "other": "Overig"
+    },
+    "gap": {
+      "suggestion": "Niet-geregistreerde tijd",
+      "fill": "Tijd invullen"
+    },
+    "budget": {
+      "warning": "Projectbudget bijna bereikt"
+    },
+    "markExportReady": "Markeer als exportklaar",
+    "ai": {
+      "suggestion": "AI suggestie",
+      "mockSuggestion": "Gewerkt aan hero sectie en navigatie componenten voor de website redesign",
+      "accept": "Accepteer",
+      "dismiss": "Verwerp"
+    },
+    "currentTime": "Huidige tijd",
+    "noEntries": "Geen registraties voor deze dag",
+    "weekTotal": "Weektotaal",
+    "hoursShort": "u",
+    "minutesShort": "m",
+    "dayLabels": {
+      "mon": "ma",
+      "tue": "di",
+      "wed": "wo",
+      "thu": "do",
+      "fri": "vr",
+      "sat": "za",
+      "sun": "zo"
+    },
+    "empty": {
+      "title": "Geen tijdregistraties",
+      "description": "Start je eerste timer om je werkdag te registreren",
+      "cta": "Start timer"
+    }
+  },
+  "agenda": {
+    "title": "Agenda",
+    "week": "Week",
+    "prevWeek": "Vorige week",
+    "nextWeek": "Volgende week",
+    "today": "Vandaag",
+    "unconfirmed": "Onbevestigd",
+    "confirmed": "Bevestigd",
+    "confirm": "Bevestig",
+    "billable": "Declarabel",
+    "nonBillable": "Niet-declarabel",
+    "suggestedClient": "Suggestie: {client}",
+    "acceptSuggestion": "Accepteer",
+    "accounts": "Accounts",
+    "googleCalendar": "Google Calendar",
+    "outlook": "Outlook",
+    "location": "Locatie",
+    "client": "Klant",
+    "selectClient": "Selecteer klant",
+    "noClient": "Geen klant",
+    "type": "Type",
+    "confirmEvent": "Afspraak bevestigen",
+    "confirmEventDescription": "Kies of deze afspraak declarabel is en koppel een klant",
+    "endOfDay": {
+      "title": "Einde-dag overzicht",
+      "description": "De volgende afspraken hebben geen gekoppelde timer",
+      "confirmAll": "Bevestig {count} uren",
+      "selectAll": "Alles selecteren",
+      "noUnconfirmed": "Geen onbevestigde afspraken"
+    },
+    "connect": {
+      "title": "Agenda koppelen",
+      "description": "Koppel je Google of Outlook agenda om afspraken te zien",
+      "google": "Google Calendar",
+      "outlook": "Outlook"
+    },
+    "tokenExpiry": {
+      "warning": "Je {provider} koppeling verloopt over {days} dagen",
+      "action": "Vernieuw koppeling"
+    },
+    "empty": {
+      "title": "Geen agenda gekoppeld",
+      "description": "Koppel je Google of Outlook agenda om afspraken te zien",
+      "cta": "Agenda koppelen"
+    },
+    "skeleton": {
+      "loading": "Agenda laden..."
+    }
+  },
+  "clients": {
+    "title": "Klanten",
+    "addClient": "Klant toevoegen",
+    "editClient": "Klant bewerken",
+    "active": "Actief",
+    "archived": "Gearchiveerd",
+    "favorite": "Favoriet",
+    "details": "Details",
+    "overview": "Overzicht",
+    "analysisTab": "Analyse",
+    "projectsTab": "Projecten",
+    "effectiveRate": "Effectief uurtarief",
+    "search": "Zoek klanten...",
+    "projectCount": "{count, plural, =0 {Geen projecten} =1 {1 project} other {# projecten}}",
+    "hourlyRateShort": "\u20ac{rate}/u",
+    "totalHours": "Totaal uren",
+    "totalRevenue": "Totale omzet",
+    "activeProjects": "Actieve projecten",
+    "recentEntries": "Recente tijdregistraties",
+    "noEntries": "Geen tijdregistraties gevonden",
+    "noProjects": "Nog geen projecten",
+    "noArchived": "Geen gearchiveerde klanten",
+    "clientInfo": "Klantgegevens",
+    "dialog": {
+      "addDescription": "Vul de gegevens in om een nieuwe klant toe te voegen",
+      "editDescription": "Pas de klantgegevens aan"
+    },
+    "fields": {
+      "name": "Naam",
+      "email": "E-mail",
+      "color": "Kleur",
+      "hourlyRate": "Uurtarief",
+      "kmRate": "Kilometertarief",
+      "minimumMinutes": "Minimale minuten",
+      "jorttId": "Jortt ID",
+      "client": "Klant",
+      "projectName": "Projectnaam",
+      "description": "Omschrijving",
+      "budgetHours": "Budgeturen",
+      "projectHourlyRate": "Eigen uurtarief",
+      "projectHourlyRateHint": "Overschrijft klanttarief"
+    },
+    "budget": {
+      "label": "Budget",
+      "warning": "Budget bijna bereikt",
+      "exceeded": "Budget overschreden"
+    },
+    "project": {
+      "add": "Project toevoegen",
+      "edit": "Project bewerken",
+      "budgetUsed": "{used} / {total} uur ({percentage}%)",
+      "budgetWarning": "Budget bijna bereikt",
+      "overBudget": "Budget overschreden",
+      "noBudget": "Geen budget ingesteld"
+    },
+    "analysis": {
+      "title": "Analyse",
+      "effectiveRate": "Effectief uurtarief",
+      "declaredRate": "Gedeclareerd tarief",
+      "breakdown": "Urenverdeling",
+      "hoursPerProject": "Uren per project",
+      "billable": "Declarabel",
+      "nonBillable": "Niet-declarabel",
+      "proBono": "Pro bono"
+    },
+    "externalLinks": "Externe koppelingen",
+    "empty": {
+      "title": "Nog geen klanten",
+      "description": "Voeg je eerste klant toe om te beginnen",
+      "cta": "Klant toevoegen"
+    }
+  },
+  "expenses": {
+    "title": "Onkosten",
+    "addExpense": "Onkost toevoegen",
+    "editExpense": "Onkost bewerken",
+    "receipt": "Bonnetje",
+    "mileage": "Kilometers",
+    "quarter": "Kwartaal",
+    "exportReady": "Exportklaar",
+    "total": "Totaal",
+    "quarterLabel": "Q{q} {year}",
+    "vatLabel": "{rate}% BTW",
+    "calculated": "€{amount} berekend",
+    "bulkExportReady": "Markeer selectie als exportklaar",
+    "tabs": {
+      "receipt": "Bonnetje",
+      "mileage": "Kilometers"
+    },
+    "upload": "Bonnetje uploaden",
+    "fileSelected": "Bestand gekozen",
+    "kmRate": "€0,23/km",
+    "noExpensesInPeriod": "Geen onkosten in deze periode",
+    "fields": {
+      "description": "Omschrijving",
+      "amount": "Bedrag",
+      "date": "Datum",
+      "vatRate": "BTW-percentage",
+      "from": "Van",
+      "to": "Naar",
+      "km": "Kilometers",
+      "client": "Klant",
+      "project": "Project"
+    },
+    "empty": {
+      "title": "Nog geen onkosten",
+      "description": "Voeg je eerste bonnetje of kilometerregistratie toe",
+      "cta": "Onkost toevoegen"
+    }
+  },
+  "financial": {
+    "cashflow": {
+      "title": "Cashflow",
+      "forecast": "Verwachte cashflow",
+      "revenue": "Verwachte omzet",
+      "expenses": "Vaste lasten",
+      "tax": "Belastingreservering",
+      "balance": "Saldo",
+      "buffer": "Veiligheidsbuffer",
+      "vatMoment": "BTW-afdracht",
+      "monthLabel": "Maand",
+      "netBalance": "Netto saldo",
+      "vatPayment": "BTW-afdracht {period}",
+      "aboveBuffer": "Boven veiligheidsbuffer",
+      "belowBuffer": "Onder veiligheidsbuffer",
+      "negative": "Negatief saldo",
+      "breakEven": "Break-even",
+      "bufferLine": "Veiligheidsbuffer",
+      "settings": {
+        "title": "Cashflow instellingen",
+        "monthlyExpenses": "Maandelijkse vaste lasten",
+        "taxPercentage": "Belastingreservering %",
+        "currentBalance": "Huidig saldo",
+        "safetyBuffer": "Veiligheidsbuffer",
+        "vatFrequency": "BTW-frequentie",
+        "save": "Opslaan",
+        "vatOptions": {
+          "monthly": "Maandelijks",
+          "quarterly": "Per kwartaal",
+          "yearly": "Jaarlijks"
+        }
+      }
+    },
+    "leave": {
+      "title": "Verlof & Ziekte",
+      "addLeave": "Verlof registreren",
+      "date": "Datum",
+      "type": "Type",
+      "notes": "Notities",
+      "year": "Jaaroverzicht {year}",
+      "noLeave": "Geen verlof geregistreerd",
+      "types": {
+        "vacation": "Vakantie",
+        "sick": "Ziekte",
+        "maternity": "Zwangerschapsverlof",
+        "publicHoliday": "Feestdag",
+        "other": "Overig"
+      },
+      "taxContext": {
+        "vacation": "Telt NIET mee voor 1.225-urencriterium",
+        "sick": "Telt NIET mee voor 1.225-urencriterium",
+        "maternity": "Telt WEL mee voor 1.225-urencriterium (max 16 weken)",
+        "publicHoliday": "Telt NIET mee voor 1.225-urencriterium",
+        "other": "Telt NIET mee voor 1.225-urencriterium"
+      },
+      "overview": {
+        "workdays": "Werkdagen",
+        "offDays": "Vrije dagen",
+        "sickDays": "Ziektedagen"
+      },
+      "empty": {
+        "title": "Nog geen verlof geregistreerd",
+        "description": "Registreer vakantie, ziekte of ander verlof",
+        "cta": "Verlof registreren"
+      }
+    }
+  },
+  "export": {
+    "title": "Export",
+    "period": "Periode",
+    "periodLabel": "Periode",
+    "clientFilter": "Klantfilter",
+    "allClients": "Alle klanten",
+    "items": "Te exporteren items",
+    "timeEntries": "{count, plural, =1 {1 tijdregistratie} other {# tijdregistraties}}",
+    "totalHours": "{hours} uur",
+    "totalAmount": "{amount}",
+    "expenses": "{count, plural, =1 {1 onkost} other {# onkosten}}",
+    "total": "Totaal",
+    "preview": "PDF preview",
+    "pdfPreview": "PDF Preview",
+    "csvDownload": "CSV Download",
+    "exportJortt": "Exporteer naar Jortt",
+    "download": "CSV download",
+    "jortt": "Exporteer naar Jortt",
+    "confirmExport": "Exporteer {count} items naar Jortt?",
+    "confirmExportDescription": "Dit exporteert de geselecteerde items naar je Jortt administratie.",
+    "csvDownloaded": "CSV gedownload",
+    "viewInJortt": "Bekijk in Jortt",
+    "backToOverview": "Terug naar overzicht",
+    "retryExport": "Opnieuw proberen",
+    "failedItems": "{failed} van {total} items mislukt",
+    "exportDate": "Exportdatum",
+    "client": "Klant",
+    "project": "Project",
+    "date": "Datum",
+    "hours": "Uren",
+    "rate": "Tarief",
+    "amount": "Bedrag",
+    "description": "Omschrijving",
+    "noClient": "Geen klant",
+    "noProject": "Geen project",
+    "success": {
+      "title": "Export succesvol",
+      "description": "{count} items geëxporteerd"
+    },
+    "error": {
+      "title": "Export gedeeltelijk mislukt",
+      "description": "Sommige items konden niet worden geëxporteerd"
+    },
+    "empty": {
+      "title": "Niets om te exporteren",
+      "description": "Markeer tijdregistraties als exportklaar in de tijdlijn",
+      "cta": "Ga naar tijdlijn"
+    }
+  },
+  "settings": {
+    "title": "Instellingen",
+    "description": "Beheer je account, voorkeuren en koppelingen",
+    "profile": {
+      "title": "Profiel",
+      "description": "Je naam, e-mail en profielfoto",
+      "name": "Naam",
+      "email": "E-mailadres",
+      "emailHint": "Wijzig via support",
+      "avatar": "Profielfoto",
+      "changePhoto": "Wijzig foto",
+      "saved": "Profiel opgeslagen"
+    },
+    "preferences": {
+      "title": "Werkvoorkeuren",
+      "description": "Weekdoel, afrondingen en standaard urentype",
+      "weeklyGoal": "Weekdoel (uren)",
+      "rounding": "Afronden",
+      "defaultType": "Standaard urentype",
+      "roundingOptions": {
+        "none": "Geen",
+        "min15": "15 minuten",
+        "min30": "30 minuten",
+        "min60": "60 minuten"
+      },
+      "saved": "Voorkeuren opgeslagen"
+    },
+    "notifications": {
+      "title": "Notificaties",
+      "description": "Wanneer en hoe je meldingen ontvangt",
+      "enabled": "Notificaties aan",
+      "window": "Tijdvenster",
+      "windowFrom": "Van",
+      "windowTo": "Tot",
+      "interval": "Interval",
+      "intervalOptions": {
+        "min30": "Elke 30 minuten",
+        "min60": "Elk uur",
+        "min90": "Elke 90 minuten",
+        "min120": "Elke 2 uur"
+      },
+      "weekdaysOnly": "Alleen werkdagen",
+      "nudgeTypes": "AI-meldingen",
+      "nudge": {
+        "gapReminder": "Ongeregistreerde tijd herinnering",
+        "endOfDay": "Einde-dag overzicht",
+        "weeklyReport": "Weekrapport",
+        "budgetWarning": "Budgetwaarschuwing",
+        "complianceAlert": "Compliance melding"
+      },
+      "saved": "Notificatie-instellingen opgeslagen"
+    },
+    "integrations": {
+      "title": "Koppelingen",
+      "description": "Agenda en boekhoudkoppelingen",
+      "agenda": "Agenda",
+      "jortt": "Jortt",
+      "connected": "Gekoppeld",
+      "disconnected": "Niet gekoppeld",
+      "error": "Verbindingsfout",
+      "connect": "Koppelen",
+      "disconnect": "Ontkoppelen",
+      "reconnect": "Opnieuw verbinden",
+      "lastSync": "Laatste sync",
+      "connectJortt": "Koppel je Jortt account",
+      "jorttDescription": "Exporteer uren en onkosten naar je Jortt administratie",
+      "googleCalendar": "Google Calendar",
+      "outlook": "Outlook",
+      "agendaDescription": "Synchroniseer afspraken vanuit je agenda",
+      "noConnections": "Geen agenda gekoppeld"
+    },
+    "compliance": {
+      "title": "Compliance",
+      "description": "Wet DBA diversiteitscore en analyse",
+      "dbaScore": "Wet DBA Score",
+      "diversityScore": "Diversiteitscore",
+      "scores": {
+        "good": "Goed",
+        "medium": "Gemiddeld",
+        "low": "Laag"
+      },
+      "warnings": {
+        "highConcentration": "Meer dan 70% van je uren gaat naar één opdrachtgever",
+        "noIndirect": "Je hebt geen indirecte uren geregistreerd"
+      },
+      "downloadPdf": "Download controle-PDF",
+      "hoursPerClient": "Uren per opdrachtgever",
+      "period": "Periode",
+      "periodOptions": {
+        "days30": "30 dagen",
+        "days60": "60 dagen",
+        "days90": "90 dagen",
+        "days180": "180 dagen",
+        "days365": "365 dagen"
+      },
+      "thresholdLine": "70% drempel",
+      "hours": "uur",
+      "activeClients": "Actieve opdrachtgevers",
+      "largestClient": "Grootste opdrachtgever",
+      "indirectHours": "Indirecte uren"
+    },
+    "templates": {
+      "title": "Timer templates",
+      "description": "Snel starten met vooraf ingestelde timers",
+      "add": "Template toevoegen",
+      "edit": "Template bewerken",
+      "favorite": "Favoriet",
+      "usageCount": "Keer gebruikt",
+      "empty": "Nog geen templates",
+      "emptyDescription": "Maak templates aan om sneller timers te starten",
+      "name": "Naam",
+      "client": "Klant",
+      "clientOptional": "Klant (optioneel)",
+      "project": "Project",
+      "projectOptional": "Project (optioneel)",
+      "type": "Type",
+      "defaultDuration": "Standaard duur (minuten)",
+      "color": "Kleur",
+      "deleteConfirm": "Weet je zeker dat je dit template wilt verwijderen?"
+    },
+    "subscription": {
+      "title": "Abonnement",
+      "description": "Je huidige plan en factuurgegevens",
+      "currentPlan": "Huidig plan",
+      "plans": {
+        "trial": "Proefperiode",
+        "starter": "Starter",
+        "pro": "Pro",
+        "team": "Team"
+      },
+      "features": {
+        "trialFeatures": "14 dagen gratis, alle Pro functies",
+        "starterFeatures": "Tijdregistratie, 3 klanten, basis export",
+        "proFeatures": "Onbeperkt klanten, AI assistent, integraties, compliance",
+        "teamFeatures": "Alles van Pro + teamleden, rapportages, SSO"
+      },
+      "upgrade": "Upgraden",
+      "manage": "Beheer abonnement",
+      "current": "Huidig"
+    },
+    "dangerZone": {
+      "title": "Gevarenzone",
+      "description": "Onomkeerbare acties voor je account",
+      "deleteAccount": "Account verwijderen",
+      "deleteWarning": "Dit kan niet ongedaan worden gemaakt. Je account wordt na 30 dagen definitief verwijderd.",
+      "confirmDelete": "Typ VERWIJDER om te bevestigen",
+      "confirmWord": "VERWIJDER",
+      "deleteButton": "Account definitief verwijderen"
+    }
+  },
+  "pages": {
+    "dashboard": "Dashboard",
+    "timeline": "Tijdlijn",
+    "agenda": "Agenda",
+    "clients": "Klanten",
+    "clientDetail": "Klant detail",
+    "expenses": "Onkosten",
+    "cashflow": "Cashflow",
+    "leave": "Verlof",
+    "export": "Export",
+    "settings": "Instellingen",
+    "account": "Account",
+    "agendaSettings": "Agenda instellingen",
+    "compliance": "Compliance",
+    "templates": "Templates"
+  },
+  "sidebar": {
+    "openMenu": "Menu openen",
+    "expandSidebar": "Zijbalk uitklappen",
+    "collapseSidebar": "Zijbalk inklappen"
+  },
+  "auth": {
+    "login": {
+      "title": "Inloggen",
+      "email": "E-mailadres",
+      "password": "Wachtwoord",
+      "submit": "Inloggen",
+      "google": "Inloggen met Google",
+      "microsoft": "Inloggen met Microsoft",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "noAccount": "Nog geen account?",
+      "register": "Registreer",
+      "errors": {
+        "invalidCredentials": "Onjuist e-mailadres of wachtwoord",
+        "accountNotFound": "Account niet gevonden",
+        "generic": "Er is iets misgegaan. Probeer het opnieuw."
+      }
+    },
+    "register": {
+      "title": "Account aanmaken",
+      "name": "Naam",
+      "email": "E-mailadres",
+      "password": "Wachtwoord",
+      "company": "Bedrijfsnaam",
+      "submit": "Registreren",
+      "hasAccount": "Al een account?",
+      "login": "Log in",
+      "passwordStrength": {
+        "weak": "Zwak",
+        "medium": "Gemiddeld",
+        "strong": "Sterk"
+      }
+    },
+    "verify": {
+      "title": "Controleer je inbox",
+      "description": "We hebben een verificatielink gestuurd naar {email}",
+      "resend": "Geen mail ontvangen? Opnieuw versturen",
+      "backToLogin": "Terug naar login"
+    },
+    "forgotPassword": {
+      "title": "Wachtwoord vergeten",
+      "submit": "Verstuur reset link",
+      "sent": "We hebben een reset link gestuurd naar je e-mailadres"
+    },
+    "resetPassword": {
+      "title": "Nieuw wachtwoord instellen",
+      "newPassword": "Nieuw wachtwoord",
+      "confirm": "Bevestig wachtwoord",
+      "submit": "Wachtwoord opslaan",
+      "success": "Wachtwoord gewijzigd"
+    },
+    "or": "of"
+  },
+  "onboarding": {
+    "step": "Stap {current} van {total}",
+    "next": "Volgende",
+    "skip": "Overslaan",
+    "finish": "Afronden",
+    "welcome": {
+      "title": "Welkom bij {brand}!",
+      "name": "Je naam",
+      "company": "Bedrijfsnaam"
+    },
+    "client": {
+      "title": "Voeg je eerste klant toe",
+      "name": "Klantnaam",
+      "email": "E-mailadres (optioneel)",
+      "rate": "Uurtarief (optioneel)",
+      "useDefault": "Gebruik \"Overig\" als standaardklant"
+    },
+    "agenda": {
+      "title": "Koppel je agenda",
+      "google": "Google Calendar",
+      "outlook": "Outlook"
+    },
+    "jortt": {
+      "title": "Koppel je boekhouding",
+      "connect": "Koppel Jortt"
+    },
+    "timer": {
+      "title": "Start je eerste timer!",
+      "start": "Start timer",
+      "goDashboard": "Ga naar dashboard"
+    },
+    "complete": "Alles klaar!"
+  },
+  "errors": {
+    "notFound": {
+      "title": "Pagina niet gevonden",
+      "description": "De pagina die je zoekt bestaat niet of is verplaatst.",
+      "goHome": "Ga naar dashboard"
+    },
+    "generic": {
+      "title": "Er is iets misgegaan",
+      "description": "Er is een onverwachte fout opgetreden.",
+      "retry": "Opnieuw proberen",
+      "goHome": "Ga naar dashboard"
+    }
+  },
+  "theme": {
+    "light": "Licht",
+    "dark": "Donker",
+    "system": "Systeem"
+  }
+}
