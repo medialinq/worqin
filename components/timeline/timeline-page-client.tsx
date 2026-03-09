@@ -9,17 +9,33 @@ import { DayView } from './day-view'
 import { WeekView } from './week-view'
 import { BackfillDialog } from './backfill-dialog'
 import { BudgetAlert } from './budget-alert'
-import {
-  mockTimeEntries,
-  mockActiveTimer,
-  mockTimerTemplates,
-  mockClients,
-  mockProjects,
-  mockLeaveEntries,
-  mockUser,
-} from '@/lib/mock'
+import type {
+  TimeEntry,
+  TimerTemplate as TimerTemplateType,
+  Client,
+  Project,
+  LeaveEntry,
+} from '@/lib/mock/types'
 
-export function TimelinePageClient() {
+interface TimelinePageClientProps {
+  timeEntries: TimeEntry[]
+  activeTimer: TimeEntry | null
+  timerTemplates: TimerTemplateType[]
+  clients: Client[]
+  projects: Project[]
+  leaveEntries: LeaveEntry[]
+  weeklyHourGoal: number
+}
+
+export function TimelinePageClient({
+  timeEntries,
+  activeTimer,
+  timerTemplates,
+  clients,
+  projects,
+  leaveEntries,
+  weeklyHourGoal,
+}: TimelinePageClientProps) {
   const t = useTranslations('timer')
 
   const [currentDate] = useState(() => new Date())
@@ -28,9 +44,9 @@ export function TimelinePageClient() {
     <div className="space-y-4">
       {/* Budget alerts */}
       <BudgetAlert
-        entries={mockTimeEntries}
-        projects={mockProjects}
-        clients={mockClients}
+        entries={timeEntries}
+        projects={projects}
+        clients={clients}
       />
 
       {/* Main layout: timeline + side panel */}
@@ -44,31 +60,31 @@ export function TimelinePageClient() {
                 <TabsTrigger value="week">{t('week')}</TabsTrigger>
               </TabsList>
               <BackfillDialog
-                clients={mockClients}
-                projects={mockProjects}
+                clients={clients}
+                projects={projects}
               />
             </div>
 
             <TabsContent value="day">
               <DayView
                 date={currentDate}
-                entries={mockTimeEntries}
-                activeTimer={mockActiveTimer}
-                leaveEntries={mockLeaveEntries}
-                clients={mockClients}
-                projects={mockProjects}
+                entries={timeEntries}
+                activeTimer={activeTimer}
+                leaveEntries={leaveEntries}
+                clients={clients}
+                projects={projects}
               />
             </TabsContent>
 
             <TabsContent value="week">
               <WeekView
                 currentDate={currentDate}
-                entries={mockTimeEntries}
-                activeTimer={mockActiveTimer}
-                leaveEntries={mockLeaveEntries}
-                weeklyGoal={mockUser.weeklyHourGoal}
-                clients={mockClients}
-                projects={mockProjects}
+                entries={timeEntries}
+                activeTimer={activeTimer}
+                leaveEntries={leaveEntries}
+                weeklyGoal={weeklyHourGoal}
+                clients={clients}
+                projects={projects}
               />
             </TabsContent>
           </Tabs>
@@ -77,13 +93,13 @@ export function TimelinePageClient() {
         {/* Right: Timer panel + templates */}
         <div className="order-first space-y-4 lg:order-last">
           <TimerPanel
-            activeTimer={mockActiveTimer}
-            clients={mockClients}
-            projects={mockProjects}
+            activeTimer={activeTimer}
+            clients={clients}
+            projects={projects}
           />
           <TimerTemplates
-            templates={mockTimerTemplates}
-            clients={mockClients}
+            templates={timerTemplates}
+            clients={clients}
           />
         </div>
       </div>

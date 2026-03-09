@@ -13,13 +13,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockTimeEntries } from '@/lib/mock/timer'
-import { mockExpenses } from '@/lib/mock/expenses'
-import { mockClients, mockProjects } from '@/lib/mock/clients'
 import type { TimeEntry, Expense } from '@/lib/mock/types'
 
 interface ExportOverviewProps {
   onItemsChange: (items: { timeEntries: TimeEntry[]; expenses: Expense[] }) => void
+  timeEntries: TimeEntry[]
+  expenses: Expense[]
+  clients: { id: string; name: string; isActive: boolean }[]
+  projects: { id: string; name: string; clientId: string }[]
 }
 
 function getMonthOptions(): { value: string; label: string }[] {
@@ -41,19 +42,13 @@ function formatCurrency(amount: number): string {
   }).format(amount)
 }
 
-function getClientName(clientId: string | null): string {
-  if (!clientId) return ''
-  const client = mockClients.find((c) => c.id === clientId)
-  return client?.name ?? ''
-}
-
-function getProjectName(projectId: string | null): string {
-  if (!projectId) return ''
-  const project = mockProjects.find((p) => p.id === projectId)
-  return project?.name ?? ''
-}
-
-export function ExportOverview({ onItemsChange }: ExportOverviewProps) {
+export function ExportOverview({
+  onItemsChange,
+  timeEntries,
+  expenses,
+  clients,
+  projects,
+}: ExportOverviewProps) {
   const t = useTranslations('export')
   const currentMonth = format(new Date(), 'yyyy-MM')
   const [selectedPeriod, setSelectedPeriod] = useState(currentMonth)
@@ -63,27 +58,37 @@ export function ExportOverview({ onItemsChange }: ExportOverviewProps) {
 
   const monthOptions = useMemo(() => getMonthOptions(), [])
 
+  function getClientName(clientId: string | null): string {
+    if (!clientId) return ''
+    const client = clients.find((c) => c.id === clientId)
+    return client?.name ?? ''
+  }
+
+  function getProjectName(projectId: string | null): string {
+    if (!projectId) return ''
+    const project = projects.find((p) => p.id === projectId)
+    return project?.name ?? ''
+  }
+
   const filteredTimeEntries = useMemo(() => {
-    const entries = mockTimeEntries.filter((entry) => {
+    return timeEntries.filter((entry) => {
       if (!entry.isExportReady || entry.exportedAt) return false
       const entryMonth = format(parseISO(entry.startedAt), 'yyyy-MM')
       if (entryMonth !== selectedPeriod) return false
       if (selectedClient !== 'all' && entry.clientId !== selectedClient) return false
       return true
     })
-    return entries
-  }, [selectedPeriod, selectedClient])
+  }, [timeEntries, selectedPeriod, selectedClient])
 
   const filteredExpenses = useMemo(() => {
-    const expenses = mockExpenses.filter((expense) => {
+    return expenses.filter((expense) => {
       if (!expense.isExportReady || expense.exportedAt) return false
       const expenseMonth = format(parseISO(expense.date), 'yyyy-MM')
       if (expenseMonth !== selectedPeriod) return false
       if (selectedClient !== 'all' && expense.clientId !== selectedClient) return false
       return true
     })
-    return expenses
-  }, [selectedPeriod, selectedClient])
+  }, [expenses, selectedPeriod, selectedClient])
 
   // Notify parent of filtered items
   useMemo(() => {
@@ -107,7 +112,7 @@ export function ExportOverview({ onItemsChange }: ExportOverviewProps) {
 
   const grandTotal = totalTimeAmount + totalExpenseAmount
 
-  const activeClients = mockClients.filter((c) => c.isActive)
+  const activeClients = clients.filter((c) => c.isActive)
 
   return (
     <div className="space-y-4">

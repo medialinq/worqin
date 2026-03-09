@@ -1,15 +1,16 @@
+import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
+import { createClient } from '@/lib/supabase/server'
 import {
-  mockUser,
-  mockDashboardStats,
-  mockCalendarEvents,
-  mockClients,
-  mockProjects,
-  mockTimeEntries,
-  mockCashflowForecast,
-  mockTasks,
-  mockActiveTimer,
-} from '@/lib/mock'
+  fetchClients,
+  fetchProjects,
+  fetchRecentTimeEntries,
+  fetchCalendarEvents,
+  fetchTasks,
+  fetchDashboardStats,
+  fetchCashflowForecast,
+  fetchActiveTimer,
+} from '@/lib/supabase/queries'
 import { KPICards } from '@/components/dashboard/kpi-cards'
 import { ActiveTimer } from '@/components/dashboard/active-timer'
 import { AIBlock } from '@/components/dashboard/ai-block'
@@ -27,11 +28,46 @@ function getGreetingKey(): 'greeting' | 'greetingAfternoon' | 'greetingEvening' 
 export default async function DashboardPage() {
   const t = await getTranslations('dashboard')
 
-  const firstName = mockUser.name.split(' ')[0]
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const { data: profile } = await supabase
+    .from('users')
+    .select('*, organizations(*)')
+    .eq('id', user.id)
+    .single()
+
+  if (!profile) redirect('/login')
+
+  const organizationId = profile.organization_id
+  const weeklyHourGoal = profile.weekly_hour_goal ?? 40
+  const firstName = (profile.name ?? user.email ?? '').split(' ')[0]
   const greetingKey = getGreetingKey()
 
+  // Fetch all dashboard data in parallel
+  const [
+    stats,
+    calendarEvents,
+    clients,
+    projects,
+    timeEntries,
+    cashflowForecast,
+    tasks,
+    activeTimer,
+  ] = await Promise.all([
+    fetchDashboardStats(user.id, weeklyHourGoal),
+    fetchCalendarEvents(user.id),
+    fetchClients(organizationId),
+    fetchProjects(organizationId),
+    fetchRecentTimeEntries(user.id),
+    fetchCashflowForecast(organizationId),
+    fetchTasks(user.id),
+    fetchActiveTimer(user.id),
+  ])
+
   // Count unconfirmed events for AI block
-  const unconfirmedCount = mockCalendarEvents.filter((e) => {
+  const unconfirmedCount = calendarEvents.filter((e) => {
     const eventDate = new Date(e.startAt)
     const now = new Date()
     return (
@@ -54,23 +90,23 @@ export default async function DashboardPage() {
         {/* Left column */}
         <div className="space-y-4">
           {/* KPI cards */}
-          <KPICards stats={mockDashboardStats} />
+          <KPICards stats={stats} />
 
           {/* AI Assistent */}
           <AIBlock unconfirmedCount={unconfirmedCount} />
 
           {/* Today column */}
           <TodayColumn
-            events={mockCalendarEvents}
-            tasks={mockTasks}
-            clients={mockClients}
+            events={calendarEvents}
+            tasks={tasks}
+            clients={clients}
           />
 
           {/* Recent activity */}
           <RecentActivity
-            entries={mockTimeEntries}
-            clients={mockClients}
-            projects={mockProjects}
+            entries={timeEntries}
+            clients={clients}
+            projects={projects}
           />
         </div>
 
@@ -78,13 +114,13 @@ export default async function DashboardPage() {
         <div className="space-y-4">
           {/* Active timer */}
           <ActiveTimer
-            timer={mockActiveTimer}
-            clients={mockClients}
-            projects={mockProjects}
+            timer={activeTimer}
+            clients={clients}
+            projects={projects}
           />
 
           {/* Cashflow widget */}
-          <CashflowWidget forecast={mockCashflowForecast} />
+          <CashflowWidget forecast={cashflowForecast} />
         </div>
       </div>
     </div>

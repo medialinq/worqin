@@ -33,7 +33,6 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
-import { mockUser, mockOrganization } from '@/lib/mock'
 import type { RoundingInterval, TimeEntryType, Plan } from '@/lib/mock/types'
 
 // --- Profile form ---
@@ -63,10 +62,33 @@ const PLANS: { key: Plan; price: string }[] = [
   { key: 'TEAM', price: '€29' },
 ]
 
-export function AccountSettings() {
+interface AccountSettingsProps {
+  user: {
+    id: string
+    name: string
+    email: string
+    weekly_hour_goal: number
+    rounding_interval: string
+    notif_enabled: boolean
+    notif_window_start: string
+    notif_window_end: string
+    notif_interval_mins: number
+    notif_weekdays_only: boolean
+  } | null
+  organization: {
+    id: string
+    plan: string
+  } | null
+  authEmail: string
+}
+
+export function AccountSettings({ user, organization, authEmail }: AccountSettingsProps) {
   const t = useTranslations('settings')
   const tc = useTranslations('common')
   const tt = useTranslations('timer.types')
+
+  const userName = user?.name ?? ''
+  const userEmail = user?.email ?? authEmail
 
   const [profileSaved, setProfileSaved] = useState(false)
   const [prefsSaved, setPrefsSaved] = useState(false)
@@ -74,12 +96,12 @@ export function AccountSettings() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [deleteConfirmText, setDeleteConfirmText] = useState('')
 
-  // Notification state (local mock)
-  const [notifEnabled, setNotifEnabled] = useState(mockUser.notifEnabled)
-  const [notifFrom, setNotifFrom] = useState(mockUser.notifWindowStart)
-  const [notifTo, setNotifTo] = useState(mockUser.notifWindowEnd)
-  const [notifInterval, setNotifInterval] = useState(String(mockUser.notifIntervalMins))
-  const [notifWeekdaysOnly, setNotifWeekdaysOnly] = useState(mockUser.notifWeekdaysOnly)
+  // Notification state
+  const [notifEnabled, setNotifEnabled] = useState(user?.notif_enabled ?? true)
+  const [notifFrom, setNotifFrom] = useState(user?.notif_window_start ?? '08:00')
+  const [notifTo, setNotifTo] = useState(user?.notif_window_end ?? '18:00')
+  const [notifInterval, setNotifInterval] = useState(String(user?.notif_interval_mins ?? 30))
+  const [notifWeekdaysOnly, setNotifWeekdaysOnly] = useState(user?.notif_weekdays_only ?? true)
   const [nudges, setNudges] = useState({
     gapReminder: true,
     endOfDay: true,
@@ -91,15 +113,15 @@ export function AccountSettings() {
   // Profile form
   const profileForm = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { name: mockUser.name },
+    defaultValues: { name: userName },
   })
 
   // Preferences form
   const prefsForm = useForm<PreferencesFormValues>({
     resolver: zodResolver(preferencesSchema),
     defaultValues: {
-      weeklyGoal: String(mockUser.weeklyHourGoal),
-      roundingInterval: mockUser.roundingInterval,
+      weeklyGoal: String(user?.weekly_hour_goal ?? 36),
+      roundingInterval: user?.rounding_interval ?? 'NONE',
       defaultType: 'BILLABLE',
     },
   })
@@ -119,12 +141,14 @@ export function AccountSettings() {
     setTimeout(() => setNotifSaved(false), 2000)
   }
 
-  const initials = mockUser.name
+  const initials = userName
     .split(' ')
     .map((n) => n[0])
     .join('')
     .toUpperCase()
     .slice(0, 2)
+
+  const orgPlan = (organization?.plan ?? 'TRIAL') as Plan
 
   const roundingOptions: { value: RoundingInterval; label: string }[] = [
     { value: 'NONE', label: t('preferences.roundingOptions.none') },
@@ -186,7 +210,7 @@ export function AccountSettings() {
             {/* Email (disabled) */}
             <div className="space-y-1.5">
               <label className="text-sm font-medium">{t('profile.email')}</label>
-              <Input value={mockUser.email} disabled />
+              <Input value={userEmail} disabled />
               <p className="text-xs text-muted-foreground">{t('profile.emailHint')}</p>
             </div>
 
@@ -384,7 +408,7 @@ export function AccountSettings() {
         <CardContent className="p-0">
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {PLANS.map((plan) => {
-              const isCurrent = mockOrganization.plan === plan.key
+              const isCurrent = orgPlan === plan.key
               const planKey = plan.key.toLowerCase() as 'trial' | 'starter' | 'pro' | 'team'
               const featureKey = `${planKey}Features` as const
               return (

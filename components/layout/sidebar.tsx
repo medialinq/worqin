@@ -25,7 +25,6 @@ import { BRAND } from "@/config/brand"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
-import { mockCalendarEvents } from "@/lib/mock"
 import { signOut } from "@/app/(auth)/actions"
 import {
   Tooltip,
@@ -136,11 +135,9 @@ function SidebarNav({
     return pathname.startsWith(href)
   }
 
-  // Count unconfirmed calendar events for agenda badge
-  const unconfirmedCount = mockCalendarEvents.filter((evt) => !evt.confirmedAt).length
-
-  const getBadge = (key: string): number | undefined => {
-    if (key === "agenda" && unconfirmedCount > 0) return unconfirmedCount
+  // Badge count — calendar events are fetched server-side;
+  // a future enhancement can pass the count via props or context.
+  const getBadge = (_key: string): number | undefined => {
     return undefined
   }
 

@@ -1,35 +1,43 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import { Settings } from 'lucide-react'
-import { MonthCards, MonthCardsSkeleton } from '@/components/financial/month-cards'
-import { CashflowChart, CashflowChartSkeleton } from '@/components/financial/cashflow-chart'
+import { MonthCards } from '@/components/financial/month-cards'
+import { CashflowChart } from '@/components/financial/cashflow-chart'
 import { CashflowSettingsForm } from '@/components/financial/cashflow-settings-form'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { mockCashflowForecast } from '@/lib/mock/cashflow'
 
-export function CashflowPageClient() {
+interface CashflowPageClientProps {
+  settings: {
+    id: string
+    organization_id: string
+    monthly_fixed_expenses: number
+    tax_reserve_percentage: number
+    current_balance: number
+    safety_buffer: number
+    vat_frequency: string
+    updated_at: string
+  } | null
+}
+
+export function CashflowPageClient({ settings }: CashflowPageClientProps) {
   const t = useTranslations('financial.cashflow')
-  const [loading, setLoading] = useState(true)
 
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600)
-    return () => clearTimeout(timer)
-  }, [])
+  const hasSettings = !!settings
 
-  const forecast = mockCashflowForecast
-  const hasSettings = !!forecast.settings
-
-  if (loading) {
-    return (
-      <div className="space-y-4">
-        <MonthCardsSkeleton />
-        <CashflowChartSkeleton />
-      </div>
-    )
-  }
+  // Transform DB snake_case to the camelCase shape components expect
+  const settingsFormatted = settings
+    ? {
+        id: settings.id,
+        organizationId: settings.organization_id,
+        monthlyFixedExpenses: settings.monthly_fixed_expenses,
+        taxReservePercentage: settings.tax_reserve_percentage,
+        currentBalance: settings.current_balance,
+        safetyBuffer: settings.safety_buffer,
+        vatFrequency: settings.vat_frequency as 'MONTHLY' | 'QUARTERLY' | 'YEARLY',
+        updatedAt: settings.updated_at,
+      }
+    : null
 
   if (!hasSettings) {
     return (
@@ -45,21 +53,43 @@ export function CashflowPageClient() {
             </p>
           </CardContent>
         </Card>
-        <CashflowSettingsForm settings={forecast.settings} />
+        <CashflowSettingsForm settings={{
+          id: '',
+          organizationId: '',
+          monthlyFixedExpenses: 0,
+          taxReservePercentage: 21,
+          currentBalance: 0,
+          safetyBuffer: 1000,
+          vatFrequency: 'QUARTERLY' as const,
+          updatedAt: new Date().toISOString(),
+        }} />
       </div>
     )
   }
 
+  // When settings exist, compute forecast months client-side
+  // (In a full implementation, months would be computed server-side or via an API)
+  const months: {
+    month: string
+    expectedRevenue: number
+    fixedExpenses: number
+    taxReserve: number
+    vatPayment: number
+    netBalance: number
+    cumulativeBalance: number
+    status: 'positive' | 'warning' | 'negative'
+  }[] = []
+
   return (
     <div className="space-y-4">
       {/* Month cards */}
-      <MonthCards months={forecast.months} settings={forecast.settings} />
+      <MonthCards months={months} settings={settingsFormatted!} />
 
       {/* Chart */}
-      <CashflowChart months={forecast.months} settings={forecast.settings} />
+      <CashflowChart months={months} settings={settingsFormatted!} />
 
       {/* Settings form */}
-      <CashflowSettingsForm settings={forecast.settings} />
+      <CashflowSettingsForm settings={settingsFormatted!} />
     </div>
   )
 }

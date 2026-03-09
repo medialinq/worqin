@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useTranslations } from 'next-intl'
 import {
   ShieldCheck,
@@ -32,7 +32,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockDBAReport } from '@/lib/mock'
 import type { DBAScore } from '@/lib/mock/types'
 
 const scoreConfig: Record<DBAScore, { colorClass: string; bgClass: string }> = {
@@ -41,11 +40,127 @@ const scoreConfig: Record<DBAScore, { colorClass: string; bgClass: string }> = {
   LOW: { colorClass: 'text-destructive', bgClass: 'bg-destructive/10' },
 }
 
-export function ComplianceSettings() {
+interface TimeEntryRow {
+  id: string
+  client_id: string | null
+  type: string
+  is_indirect: boolean
+  duration_mins: number | null
+  duration_billed_mins: number | null
+  started_at: string
+}
+
+interface ClientRow {
+  id: string
+  name: string
+  color: string
+  is_active: boolean
+}
+
+interface ComplianceSettingsProps {
+  timeEntries: TimeEntryRow[]
+  clients: ClientRow[]
+}
+
+function computeReport(
+  timeEntries: TimeEntryRow[],
+  clients: ClientRow[],
+  periodDays: number
+): {
+  score: DBAScore
+  largestClientPercentage: number
+  activeClientCount: number
+  hasIndirectHours: boolean
+  clientBreakdown: {
+    clientId: string
+    clientName: string
+    clientColor: string
+    percentage: number
+    hours: number
+  }[]
+  warnings: string[]
+  periodDays: number
+} {
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - periodDays)
+
+  const filtered = timeEntries.filter(
+    (e) => new Date(e.started_at) >= cutoff
+  )
+
+  // Aggregate hours per client
+  const clientHours: Record<string, number> = {}
+  let totalMins = 0
+  let hasIndirect = false
+
+  for (const entry of filtered) {
+    const mins = entry.duration_billed_mins ?? entry.duration_mins ?? 0
+    totalMins += mins
+    if (entry.is_indirect) hasIndirect = true
+
+    const cid = entry.client_id ?? '__no_client__'
+    clientHours[cid] = (clientHours[cid] ?? 0) + mins
+  }
+
+  const totalHours = totalMins / 60
+
+  // Build breakdown
+  const clientMap = new Map(clients.map((c) => [c.id, c]))
+  const breakdown = Object.entries(clientHours)
+    .map(([clientId, mins]) => {
+      const client = clientMap.get(clientId)
+      return {
+        clientId,
+        clientName: client?.name ?? 'Onbekend',
+        clientColor: client?.color ?? '#94A3B8',
+        hours: Math.round((mins / 60) * 10) / 10,
+        percentage: totalMins > 0 ? Math.round((mins / totalMins) * 100) : 0,
+      }
+    })
+    .sort((a, b) => b.percentage - a.percentage)
+
+  const largestPct = breakdown[0]?.percentage ?? 0
+  const activeClientIds = new Set(
+    filtered.filter((e) => e.client_id).map((e) => e.client_id!)
+  )
+
+  // Determine score
+  let score: DBAScore = 'GOOD'
+  if (largestPct > 70) score = 'LOW'
+  else if (largestPct > 50) score = 'MEDIUM'
+
+  // Warnings
+  const warnings: string[] = []
+  if (largestPct > 50) {
+    warnings.push('Meer dan 50% van je uren gaat naar één opdrachtgever')
+  }
+  if (activeClientIds.size < 2) {
+    warnings.push('Je hebt minder dan 2 actieve opdrachtgevers')
+  }
+  if (!hasIndirect) {
+    warnings.push('Je registreert geen indirecte uren (administratie, acquisitie, etc.)')
+  }
+
+  return {
+    score,
+    largestClientPercentage: largestPct,
+    activeClientCount: activeClientIds.size,
+    hasIndirectHours: hasIndirect,
+    clientBreakdown: breakdown,
+    warnings,
+    periodDays,
+  }
+}
+
+export function ComplianceSettings({ timeEntries, clients }: ComplianceSettingsProps) {
   const t = useTranslations('settings.compliance')
   const [period, setPeriod] = useState('90')
 
-  const report = mockDBAReport
+  const report = useMemo(
+    () => computeReport(timeEntries, clients, Number(period)),
+    [timeEntries, clients, period]
+  )
+
   const config = scoreConfig[report.score]
   const scoreLabel = t(`scores.${report.score.toLowerCase() as 'good' | 'medium' | 'low'}`)
 
@@ -212,7 +327,7 @@ export function ComplianceSettings() {
           <div>
             <h3 className="text-sm font-medium">{t('indirectHours')}</h3>
             <p className="text-sm text-muted-foreground">
-              {report.hasIndirectHours ? '✓' : '✗'}
+              {report.hasIndirectHours ? '\u2713' : '\u2717'}
             </p>
           </div>
         </CardContent>

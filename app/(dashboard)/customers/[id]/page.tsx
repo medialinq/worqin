@@ -1,6 +1,12 @@
+import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
+import { createClient } from '@/lib/supabase/server'
+import {
+  fetchClient,
+  fetchProjectsByClient,
+  fetchTimeEntriesByClient,
+} from '@/lib/supabase/queries'
 import { ClientDetailPage } from '@/components/clients/client-detail-page'
-import { mockClients, mockProjects, mockTimeEntries } from '@/lib/mock'
 
 interface PageProps {
   params: Promise<{ id: string }>
@@ -9,11 +15,17 @@ interface PageProps {
 export default async function ClientDetailRoute({ params }: PageProps) {
   const { id } = await params
 
-  const client = mockClients.find((c) => c.id === id)
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) redirect('/login')
+
+  const client = await fetchClient(id)
   if (!client) notFound()
 
-  const projects = mockProjects.filter((p) => p.clientId === id)
-  const entries = mockTimeEntries.filter((e) => e.clientId === id)
+  const [projects, entries] = await Promise.all([
+    fetchProjectsByClient(id),
+    fetchTimeEntriesByClient(id),
+  ])
 
   return (
     <ClientDetailPage

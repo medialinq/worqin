@@ -1,34 +1,39 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
-import { CalendarOff, Plus } from 'lucide-react'
+import { CalendarOff } from 'lucide-react'
 import { LeaveForm } from '@/components/financial/leave-form'
-import { LeaveOverview, LeaveOverviewSkeleton } from '@/components/financial/leave-overview'
+import { LeaveOverview } from '@/components/financial/leave-overview'
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { mockLeaveEntries } from '@/lib/mock/leave'
 
-export function LeavePageClient() {
+interface LeavePageClientProps {
+  entries: {
+    id: string
+    organization_id: string
+    user_id: string
+    date: string
+    type: string
+    notes: string | null
+    created_at: string
+  }[]
+}
+
+export function LeavePageClient({ entries }: LeavePageClientProps) {
   const t = useTranslations('financial.leave')
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 600)
-    return () => clearTimeout(timer)
-  }, [])
 
   const currentYear = new Date().getFullYear()
-  const isEmpty = !loading && mockLeaveEntries.length === 0
+  const isEmpty = entries.length === 0
 
-  if (loading) {
-    return (
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
-        <LeaveOverviewSkeleton />
-        <div className="h-[400px] animate-pulse rounded-xl bg-muted" />
-      </div>
-    )
-  }
+  // Transform DB snake_case to camelCase for child components
+  const formattedEntries = entries.map((e) => ({
+    id: e.id,
+    organizationId: e.organization_id,
+    userId: e.user_id,
+    date: e.date,
+    type: e.type as 'VACATION' | 'SICK' | 'MATERNITY' | 'PUBLIC_HOLIDAY' | 'OTHER',
+    notes: e.notes,
+    createdAt: e.created_at,
+  }))
 
   if (isEmpty) {
     return (
@@ -51,7 +56,7 @@ export function LeavePageClient() {
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_340px]">
-      <LeaveOverview entries={mockLeaveEntries} year={currentYear} />
+      <LeaveOverview entries={formattedEntries} year={currentYear} />
       <LeaveForm />
     </div>
   )

@@ -12,7 +12,7 @@ import {
   Trash2,
   Timer,
 } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -31,7 +31,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockTimerTemplates, mockClients, mockProjects } from '@/lib/mock'
 import type { TimerTemplate, TimeEntryType } from '@/lib/mock/types'
 
 const PRESET_COLORS = [
@@ -56,12 +55,57 @@ const templateSchema = z.object({
 
 type TemplateFormValues = z.infer<typeof templateSchema>
 
-export function TemplatesSettings() {
+// DB row shape (snake_case)
+interface TemplateRow {
+  id: string
+  organization_id: string
+  user_id: string
+  name: string
+  client_id: string | null
+  project_id: string | null
+  description: string | null
+  type: string
+  default_mins: number | null
+  color: string | null
+  is_favorite: boolean
+  usage_count: number
+  last_used_at: string | null
+  created_at: string
+}
+
+function toTimerTemplate(row: TemplateRow): TimerTemplate {
+  return {
+    id: row.id,
+    organizationId: row.organization_id,
+    userId: row.user_id,
+    name: row.name,
+    clientId: row.client_id,
+    projectId: row.project_id,
+    description: row.description,
+    type: row.type as TimeEntryType,
+    defaultMins: row.default_mins,
+    color: row.color,
+    isFavorite: row.is_favorite,
+    usageCount: row.usage_count,
+    lastUsedAt: row.last_used_at,
+    createdAt: row.created_at,
+  }
+}
+
+interface TemplatesSettingsProps {
+  initialTemplates: TemplateRow[]
+  clients: { id: string; name: string }[]
+  projects: { id: string; name: string; client_id: string }[]
+}
+
+export function TemplatesSettings({ initialTemplates, clients, projects }: TemplatesSettingsProps) {
   const t = useTranslations('settings.templates')
   const tc = useTranslations('common')
   const tt = useTranslations('timer.types')
 
-  const [templates, setTemplates] = useState<TimerTemplate[]>(mockTimerTemplates)
+  const [templates, setTemplates] = useState<TimerTemplate[]>(
+    initialTemplates.map(toTimerTemplate)
+  )
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<TimerTemplate | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
@@ -171,7 +215,7 @@ export function TemplatesSettings() {
 
   function getClientName(clientId: string | null): string | undefined {
     if (!clientId) return undefined
-    return mockClients.find((c) => c.id === clientId)?.name
+    return clients.find((c) => c.id === clientId)?.name
   }
 
   function getTypeBadgeColor(type: TimeEntryType): string {
@@ -191,7 +235,7 @@ export function TemplatesSettings() {
   const selectedColor = form.watch('color')
   const selectedClientId = form.watch('clientId')
   const clientProjects = selectedClientId
-    ? mockProjects.filter((p) => p.clientId === selectedClientId)
+    ? projects.filter((p) => p.client_id === selectedClientId)
     : []
 
   return (
@@ -329,7 +373,7 @@ export function TemplatesSettings() {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="">—</SelectItem>
-                  {mockClients.map((client) => (
+                  {clients.map((client) => (
                     <SelectItem key={client.id} value={client.id}>
                       {client.name}
                     </SelectItem>
