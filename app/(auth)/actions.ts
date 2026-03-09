@@ -1,7 +1,14 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+
+async function getOrigin() {
+  const h = await headers()
+  const origin = h.get('origin') || h.get('referer')?.replace(/\/[^/]*$/, '') || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  return origin.replace(/\/$/, '')
+}
 
 export async function login(formData: { email: string; password: string }) {
   const supabase = await createClient()
@@ -47,6 +54,8 @@ export async function register(formData: {
 }) {
   const supabase = await createClient()
 
+  const origin = await getOrigin()
+
   const { error } = await supabase.auth.signUp({
     email: formData.email,
     password: formData.password,
@@ -55,7 +64,7 @@ export async function register(formData: {
         name: formData.name,
         company: formData.company,
       },
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/callback`,
     },
   })
 
@@ -69,8 +78,10 @@ export async function register(formData: {
 export async function forgotPassword(formData: { email: string }) {
   const supabase = await createClient()
 
+  const origin = await getOrigin()
+
   const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback?next=/reset-password`,
+    redirectTo: `${origin}/auth/callback?next=/reset-password`,
   })
 
   if (error) {
@@ -97,11 +108,13 @@ export async function resetPassword(formData: { password: string }) {
 export async function resendVerification(email: string) {
   const supabase = await createClient()
 
+  const origin = await getOrigin()
+
   const { error } = await supabase.auth.resend({
     type: 'signup',
     email,
     options: {
-      emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
+      emailRedirectTo: `${origin}/auth/callback`,
     },
   })
 
@@ -115,10 +128,12 @@ export async function resendVerification(email: string) {
 export async function signInWithProvider(provider: 'google' | 'azure') {
   const supabase = await createClient()
 
+  const origin = await getOrigin()
+
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
     options: {
-      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'}/auth/callback`,
+      redirectTo: `${origin}/auth/callback`,
     },
   })
 
