@@ -1,18 +1,36 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import { createServerClient } from '@supabase/ssr'
 
-function getExternalOrigin(request: NextRequest): string {
+// SECURITY: Validate origin against allowed hosts to prevent open redirect
+function getSafeOrigin(request: NextRequest): string {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  if (siteUrl) return siteUrl
+
+  const allowedHosts = new Set(
+    (process.env.ALLOWED_HOSTS || 'localhost:3000').split(',').map((h) => h.trim())
+  )
   const host = request.headers.get('x-forwarded-host') || request.headers.get('host') || ''
-  const proto = request.headers.get('x-forwarded-proto') || 'https'
-  if (host) return `${proto}://${host}`
-  return process.env.NEXT_PUBLIC_SITE_URL || request.nextUrl.origin
+  if (host && allowedHosts.has(host)) {
+    const proto = request.headers.get('x-forwarded-proto') || 'https'
+    return `${proto}://${host}`
+  }
+
+  return request.nextUrl.origin
+}
+
+// SECURITY: Validate next parameter to prevent open redirect
+function getSafeNext(searchParams: URLSearchParams): string {
+  const raw = searchParams.get('next') ?? '/onboarding'
+  // Must start with / and must not start with // (protocol-relative URL)
+  if (raw.startsWith('/') && !raw.startsWith('//')) return raw
+  return '/onboarding'
 }
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
-  const origin = getExternalOrigin(request)
+  const origin = getSafeOrigin(request)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/onboarding'
+  const next = getSafeNext(searchParams)
 
   if (!code) {
     return NextResponse.redirect(`${origin}/login`)
@@ -62,20 +80,28 @@ export async function GET(request: NextRequest) {
     if (!profile) {
       // First login — create org + user via service role
       await createUserProfile(user)
-      // Redirect to onboarding
       response = NextResponse.redirect(`${origin}/onboarding`)
-      // Re-set cookies on the new response
+      // Re-set cookies with proper options on the new response
       request.cookies.getAll().forEach((cookie) => {
-        response.cookies.set(cookie.name, cookie.value)
+        response.cookies.set(cookie.name, cookie.value, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+        })
       })
       return response
     }
 
     if (profile.onboarded_at) {
-      // Already onboarded, go to dashboard
       response = NextResponse.redirect(`${origin}/dashboard`)
       request.cookies.getAll().forEach((cookie) => {
-        response.cookies.set(cookie.name, cookie.value)
+        response.cookies.set(cookie.name, cookie.value, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          path: '/',
+        })
       })
       return response
     }
@@ -113,7 +139,7 @@ async function createUserProfile(user: { id: string; email?: string; user_metada
     .single()
 
   if (orgError || !org) {
-    console.error('Failed to create organization:', orgError)
+    console.error('Failed to create organization:', orgError?.code)
     return
   }
 
@@ -127,7 +153,7 @@ async function createUserProfile(user: { id: string; email?: string; user_metada
   })
 
   if (userError) {
-    console.error('Failed to create user:', userError)
+    console.error('Failed to create user:', userError.code)
     return
   }
 

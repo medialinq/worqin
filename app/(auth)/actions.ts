@@ -11,13 +11,21 @@ import {
   resetPasswordSchema,
 } from '@/lib/validations'
 
+// SECURITY: Validate origin against allowed hosts to prevent open redirect
 async function getOrigin() {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+  if (siteUrl) return siteUrl
+
   const h = await headers()
-  // Prefer x-forwarded-host (set by Traefik), then host header
+  const allowedHosts = new Set(
+    (process.env.ALLOWED_HOSTS || 'localhost:3000').split(',').map((s) => s.trim())
+  )
   const host = h.get('x-forwarded-host') || h.get('host') || ''
-  const proto = h.get('x-forwarded-proto') || 'https'
-  if (host) return `${proto}://${host}`
-  return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+  if (host && allowedHosts.has(host)) {
+    const proto = h.get('x-forwarded-proto') || 'https'
+    return `${proto}://${host}`
+  }
+  return 'http://localhost:3000'
 }
 
 export async function login(formData: { email: string; password: string }): Promise<ActionResult> {
