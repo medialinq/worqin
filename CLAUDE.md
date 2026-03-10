@@ -172,3 +172,47 @@ docs:             documentatie
 test(export):     tests
 chore(deps):      dependencies
 ```
+
+---
+
+## Deployment
+
+### Infrastructuur
+
+| Component | URL / Host |
+|---|---|
+| Server | `server01.hjn-media.nl` (SSH: `root@`) |
+| Coolify | Draait op de server, proxy = Traefik |
+| Worqin app | `https://worqin.hjn-media.nl` |
+| Supabase | `https://supabase.hjn-media.nl` (self-hosted) |
+
+### Deploy naar productie
+
+```bash
+# 1. Push naar main
+git push origin main
+
+# 2. Deploy via script
+./scripts/deploy.sh
+```
+
+### Coolify API referentie
+
+| Item | Waarde |
+|---|---|
+| App UUID | `gvsvp4p63ke4qyvbvawd70af` |
+| Supabase service UUID | `ac84c8w44g8gs00sswgwkwco` |
+| API token env var | `COOLIFY_API_TOKEN` (in `.env.local`, NIET committen) |
+| API base | `http://localhost:8000` (via SSH) |
+
+### Supabase DB direct benaderen
+
+```bash
+ssh root@server01.hjn-media.nl \
+  'docker exec -i supabase-db-ac84c8w44g8gs00sswgwkwco \
+   psql -U supabase_admin -d postgres'
+```
+
+### Environment variables (in Coolify)
+
+`NEXT_PUBLIC_SUPABASE_URL` · `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` · `SUPABASE_SERVICE_ROLE_KEY` · `SUPABASE_JWT_SECRET` · `NEXT_PUBLIC_SITE_URL` · `NIXPACKS_NODE_VERSION=22`
