@@ -496,7 +496,9 @@
       "googleCalendar": "Google Calendar",
       "outlook": "Outlook",
       "agendaDescription": "Sync appointments from your calendar",
-      "noConnections": "No calendar connected"
+      "noConnections": "No calendar connected",
+      "sync": "Sync",
+      "syncing": "Syncing..."
     },
     "compliance": {
       "title": "Compliance",

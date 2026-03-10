@@ -496,7 +496,9 @@
       "googleCalendar": "Google Calendar",
       "outlook": "Outlook",
       "agendaDescription": "Synchroniseer afspraken vanuit je agenda",
-      "noConnections": "Geen agenda gekoppeld"
+      "noConnections": "Geen agenda gekoppeld",
+      "sync": "Synchroniseren",
+      "syncing": "Bezig met synchroniseren..."
     },
     "compliance": {
       "title": "Compliance",

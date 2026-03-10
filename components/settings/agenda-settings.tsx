@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
   Calendar,
@@ -10,61 +12,63 @@ import {
   Unlink,
   RefreshCw,
   Link2,
+  Loader2,
 } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { mockCalendarConnections } from '@/lib/mock'
+import { disconnectCalendar, reconnectCalendar, syncCalendar } from '@/app/(dashboard)/settings/calendar/actions'
 
 type ConnectionState = 'connected' | 'disconnected' | 'error'
 
-interface MockIntegration {
+interface CalendarConnection {
+  id: string
+  provider: string
+  accountEmail: string
+  isActive: boolean
+  lastSyncedAt: string | null
+}
+
+interface AgendaSettingsProps {
+  connections: CalendarConnection[]
+}
+
+interface AgendaIntegration {
   provider: string
   label: string
   icon: React.ReactNode
   state: ConnectionState
   email?: string
   lastSync?: string
+  connectionId?: string
 }
 
-export function AgendaSettings() {
+export function AgendaSettings({ connections }: AgendaSettingsProps) {
   const t = useTranslations('settings.integrations')
+  const router = useRouter()
+  const [loadingAction, setLoadingAction] = useState<string | null>(null)
 
-  const googleConn = mockCalendarConnections.find((c) => c.provider === 'GOOGLE')
-  const outlookConn = mockCalendarConnections.find((c) => c.provider === 'MICROSOFT')
+  const googleConn = connections.find((c) => c.provider === 'GOOGLE')
+  const microsoftConn = connections.find((c) => c.provider === 'MICROSOFT')
 
-  // Build mock integrations with various states for demo
-  const agendaIntegrations: MockIntegration[] = [
+  const agendaIntegrations: AgendaIntegration[] = [
     {
       provider: 'GOOGLE',
       label: t('googleCalendar'),
       icon: <Calendar className="size-5" />,
-      state: googleConn?.isActive ? 'connected' : 'disconnected',
+      state: googleConn?.isActive ? 'connected' : (googleConn ? 'error' : 'disconnected') as ConnectionState,
       email: googleConn?.accountEmail,
       lastSync: googleConn?.lastSyncedAt ?? undefined,
+      connectionId: googleConn?.id,
     },
     {
       provider: 'MICROSOFT',
       label: t('outlook'),
       icon: <Calendar className="size-5" />,
-      state: outlookConn?.isActive ? 'connected' : 'disconnected',
-      email: outlookConn?.accountEmail,
-      lastSync: outlookConn?.lastSyncedAt ?? undefined,
-    },
-    // Error state demo
-    {
-      provider: 'ERROR_DEMO',
-      label: 'Outlook (Demo fout)',
-      icon: <Calendar className="size-5" />,
-      state: 'error',
-      email: 'demo@example.com',
-    },
-    // Disconnected state demo
-    {
-      provider: 'DISCONNECTED_DEMO',
-      label: 'Apple Calendar',
-      icon: <Calendar className="size-5" />,
-      state: 'disconnected',
+      state: microsoftConn?.isActive ? 'connected' : (microsoftConn ? 'error' : 'disconnected') as ConnectionState,
+      email: microsoftConn?.accountEmail,
+      lastSync: microsoftConn?.lastSyncedAt ?? undefined,
+      connectionId: microsoftConn?.id,
     },
   ]
 
@@ -81,6 +85,45 @@ export function AgendaSettings() {
       badge: <Badge className="bg-destructive/10 text-destructive"><AlertCircle className="mr-1 size-3" />{t('error')}</Badge>,
       icon: <AlertCircle className="size-5 text-destructive" />,
     },
+  }
+
+  async function handleConnect(provider: string) {
+    window.location.href = `/api/agenda/connect?provider=${provider}`
+  }
+
+  async function handleDisconnect(connectionId: string) {
+    setLoadingAction(`disconnect-${connectionId}`)
+    try {
+      await disconnectCalendar(connectionId)
+      router.refresh()
+    } finally {
+      setLoadingAction(null)
+    }
+  }
+
+  async function handleReconnect(connectionId: string, provider: string) {
+    setLoadingAction(`reconnect-${connectionId}`)
+    try {
+      await reconnectCalendar(connectionId)
+      // After marking inactive, redirect to OAuth flow
+      window.location.href = `/api/agenda/connect?provider=${provider}`
+    } finally {
+      setLoadingAction(null)
+    }
+  }
+
+  async function handleSync(connectionId: string) {
+    setLoadingAction(`sync-${connectionId}`)
+    try {
+      await syncCalendar(connectionId)
+      router.refresh()
+    } finally {
+      setLoadingAction(null)
+    }
+  }
+
+  function isLoading(action: string, id?: string) {
+    return loadingAction === `${action}-${id}`
   }
 
   return (
@@ -116,22 +159,58 @@ export function AgendaSettings() {
                   )}
                 </div>
               </div>
-              <div>
+              <div className="flex items-center gap-2">
                 {integration.state === 'connected' && (
-                  <Button variant="outline" size="sm">
-                    <Unlink className="mr-1.5 size-3.5" />
-                    {t('disconnect')}
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSync(integration.connectionId!)}
+                      disabled={isLoading('sync', integration.connectionId)}
+                    >
+                      {isLoading('sync', integration.connectionId) ? (
+                        <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                      ) : (
+                        <RefreshCw className="mr-1.5 size-3.5" />
+                      )}
+                      {t('sync')}
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleDisconnect(integration.connectionId!)}
+                      disabled={isLoading('disconnect', integration.connectionId)}
+                    >
+                      {isLoading('disconnect', integration.connectionId) ? (
+                        <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                      ) : (
+                        <Unlink className="mr-1.5 size-3.5" />
+                      )}
+                      {t('disconnect')}
+                    </Button>
+                  </>
                 )}
                 {integration.state === 'disconnected' && (
-                  <Button size="sm">
+                  <Button
+                    size="sm"
+                    onClick={() => handleConnect(integration.provider)}
+                  >
                     <Link2 className="mr-1.5 size-3.5" />
                     {t('connect')}
                   </Button>
                 )}
                 {integration.state === 'error' && (
-                  <Button variant="destructive" size="sm">
-                    <RefreshCw className="mr-1.5 size-3.5" />
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => handleReconnect(integration.connectionId!, integration.provider)}
+                    disabled={isLoading('reconnect', integration.connectionId)}
+                  >
+                    {isLoading('reconnect', integration.connectionId) ? (
+                      <Loader2 className="mr-1.5 size-3.5 animate-spin" />
+                    ) : (
+                      <RefreshCw className="mr-1.5 size-3.5" />
+                    )}
                     {t('reconnect')}
                   </Button>
                 )}
