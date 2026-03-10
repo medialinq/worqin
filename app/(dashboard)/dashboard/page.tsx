@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth'
 import {
   fetchClients,
   fetchProjects,
@@ -27,22 +26,17 @@ function getGreetingKey(): 'greeting' | 'greetingAfternoon' | 'greetingEvening' 
 
 export default async function DashboardPage() {
   const t = await getTranslations('dashboard')
+  const { supabase, user, userId, organizationId, profile } = await getAuthContext()
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const { data: profile } = await supabase
+  // Fetch full profile with organization for dashboard-specific fields
+  const { data: fullProfile } = await supabase
     .from('users')
     .select('*, organizations(*)')
-    .eq('id', user.id)
+    .eq('id', userId)
     .single()
 
-  if (!profile) redirect('/login')
-
-  const organizationId = profile.organization_id
   const weeklyHourGoal = profile.weekly_hour_goal ?? 40
-  const firstName = (profile.name ?? user.email ?? '').split(' ')[0]
+  const firstName = (fullProfile?.name ?? user.email ?? '').split(' ')[0]
   const greetingKey = getGreetingKey()
 
   // Fetch all dashboard data in parallel

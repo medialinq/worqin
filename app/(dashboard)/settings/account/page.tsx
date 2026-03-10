@@ -1,26 +1,21 @@
 import { getTranslations } from 'next-intl/server'
-import { redirect } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth'
 import { PageHeading } from '@/components/layout/page-heading'
 import { AccountSettings } from '@/components/settings/account-settings'
 
 export default async function AccountPage() {
   const t = await getTranslations('pages')
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  const { supabase, user, userId } = await getAuthContext()
 
-  // Fetch user profile
+  // Fetch full user profile
   const { data: profile } = await supabase
     .from('users')
     .select('*')
-    .eq('id', user.id)
+    .eq('id', userId)
     .single()
 
-  if (!profile) redirect('/login')
-
   // Fetch organization
-  const { data: organization } = profile.organization_id
+  const { data: organization } = profile?.organization_id
     ? await supabase
         .from('organizations')
         .select('*')

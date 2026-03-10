@@ -1,18 +1,14 @@
-import { redirect } from 'next/navigation'
 import { getTranslations } from 'next-intl/server'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth'
 import { fetchExpenses } from '@/lib/supabase/queries'
 import { PageHeading } from '@/components/layout/page-heading'
 import { ExpensesPageClient } from './expenses-page-client'
 
 export default async function ExpensesPage() {
   const t = await getTranslations('expenses')
+  const { userId } = await getAuthContext()
 
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-
-  const expenses = await fetchExpenses(user.id)
+  const expenses = await fetchExpenses(userId)
 
   return (
     <div className="space-y-4">

@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation"
 import { getTranslations } from "next-intl/server"
-import { createClient } from "@/lib/supabase/server"
+import { getAuthContext } from "@/lib/auth"
 import {
   fetchCalendarEvents,
   fetchCalendarConnections,
@@ -11,23 +10,12 @@ import { AgendaView } from "@/components/agenda/agenda-view"
 
 export default async function AgendaPage() {
   const t = await getTranslations("pages")
-
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect("/login")
-
-  const { data: profile } = await supabase
-    .from("users")
-    .select("organization_id")
-    .eq("id", user.id)
-    .single()
-
-  if (!profile) redirect("/login")
+  const { userId, organizationId } = await getAuthContext()
 
   const [events, connections, clients] = await Promise.all([
-    fetchCalendarEvents(user.id),
-    fetchCalendarConnections(user.id),
-    fetchClients(profile.organization_id),
+    fetchCalendarEvents(userId),
+    fetchCalendarConnections(userId),
+    fetchClients(organizationId),
   ])
 
   return (

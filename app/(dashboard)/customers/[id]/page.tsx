@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation'
 import { notFound } from 'next/navigation'
-import { createClient } from '@/lib/supabase/server'
+import { getAuthContext } from '@/lib/auth'
 import {
   fetchClient,
   fetchProjectsByClient,
@@ -14,10 +13,7 @@ interface PageProps {
 
 export default async function ClientDetailRoute({ params }: PageProps) {
   const { id } = await params
-
-  const supabase = await createClient()
-  const { data: { user } } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
+  await getAuthContext()
 
   const client = await fetchClient(id)
   if (!client) notFound()
