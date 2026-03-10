@@ -16,7 +16,8 @@ export default async function ExportPage() {
     .eq('id', user.id)
     .single()
 
-  const organizationId = profile?.organization_id
+  if (!profile) redirect('/login')
+  const organizationId = profile.organization_id
 
   // Fetch export-ready time entries (not yet exported)
   const { data: timeEntries } = organizationId

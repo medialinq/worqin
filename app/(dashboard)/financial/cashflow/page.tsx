@@ -16,7 +16,8 @@ export default async function CashflowPage() {
     .eq('id', user.id)
     .single()
 
-  const organizationId = profile?.organization_id
+  if (!profile) redirect('/login')
+  const organizationId = profile.organization_id
 
   // Cashflow settings: 1-to-1 with organization
   const { data: settings } = organizationId

@@ -16,7 +16,8 @@ export default async function TemplatesPage() {
     .eq('id', user.id)
     .single()
 
-  const organizationId = profile?.organization_id
+  if (!profile) redirect('/login')
+  const organizationId = profile.organization_id
 
   // Timer templates are per-user
   const { data: templates } = await supabase

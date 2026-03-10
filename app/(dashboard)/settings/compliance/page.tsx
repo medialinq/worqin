@@ -16,7 +16,8 @@ export default async function CompliancePage() {
     .eq('id', user.id)
     .single()
 
-  const organizationId = profile?.organization_id
+  if (!profile) redirect('/login')
+  const organizationId = profile.organization_id
 
   // Fetch time entries for compliance computation (last 365 days max)
   const cutoffDate = new Date()

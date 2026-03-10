@@ -17,8 +17,10 @@ export default async function AccountPage() {
     .eq('id', user.id)
     .single()
 
+  if (!profile) redirect('/login')
+
   // Fetch organization
-  const { data: organization } = profile?.organization_id
+  const { data: organization } = profile.organization_id
     ? await supabase
         .from('organizations')
         .select('*')
