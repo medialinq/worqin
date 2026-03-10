@@ -225,6 +225,29 @@ export const updateCashflowSettingsSchema = z.object({
   vatFrequency: z.enum(['MONTHLY', 'QUARTERLY', 'YEARLY']).optional(),
 })
 
+// ── Tasks ────────────────────────────────────────────
+// DB columns: title, due_at, client_id, project_id, is_completed, calendar_event_id
+
+export const createTaskSchema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  dueAt: z.string().datetime().nullable().optional(),
+  clientId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+})
+
+export const updateTaskSchema = z.object({
+  id: z.string().uuid(),
+  title: z.string().min(1).optional(),
+  dueAt: z.string().datetime().nullable().optional(),
+  clientId: z.string().uuid().nullable().optional(),
+  projectId: z.string().uuid().nullable().optional(),
+  isCompleted: z.boolean().optional(),
+})
+
+export const deleteTaskSchema = z.object({
+  id: z.string().uuid(),
+})
+
 // ── Templates ─────────────────────────────────────────
 
 export const createTemplateSchema = z.object({

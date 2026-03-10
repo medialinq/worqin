@@ -1,7 +1,10 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
+import { createLeave } from '@/app/(dashboard)/financial/leave/actions'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -61,6 +64,10 @@ interface LeaveFormProps {
 export function LeaveForm({ onSubmitted }: LeaveFormProps) {
   const t = useTranslations('financial.leave')
   const tCommon = useTranslations('common')
+  const router = useRouter()
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const {
     register,
@@ -81,13 +88,18 @@ export function LeaveForm({ onSubmitted }: LeaveFormProps) {
   const selectedType = (watch('type') || 'VACATION') as LeaveType
   const typeKey = LEAVE_TYPE_KEYS[selectedType] ?? 'other'
 
-  function onSubmit(_data: LeaveFormValues) {
-    // Phase 1: mock — just reset
-    reset({
-      date: todayString(),
-      type: 'VACATION',
-      notes: '',
+  async function onSubmit(data: LeaveFormValues) {
+    setLoading(true)
+    setError(null)
+    const result = await createLeave({
+      date: data.date,
+      type: data.type as string,
+      notes: data.notes || undefined,
     })
+    setLoading(false)
+    if ('error' in result) { setError(result.error); return }
+    reset({ date: todayString(), type: 'VACATION', notes: '' })
+    router.refresh()
     onSubmitted?.()
   }
 
@@ -164,8 +176,13 @@ export function LeaveForm({ onSubmitted }: LeaveFormProps) {
             />
           </div>
 
+          {/* Error */}
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
+
           {/* Save */}
-          <Button type="submit" className="w-full">
+          <Button type="submit" className="w-full" disabled={loading}>
             {tCommon('save')}
           </Button>
         </form>

@@ -1,7 +1,9 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { updateProfile } from '@/app/(dashboard)/settings/account/actions'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -90,7 +92,10 @@ export function AccountSettings({ user, organization, authEmail }: AccountSettin
   const userName = user?.name ?? ''
   const userEmail = user?.email ?? authEmail
 
+  const router = useRouter()
+
   const [profileSaved, setProfileSaved] = useState(false)
+  const [profileError, setProfileError] = useState<string | null>(null)
   const [prefsSaved, setPrefsSaved] = useState(false)
   const [notifSaved, setNotifSaved] = useState(false)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
@@ -126,14 +131,25 @@ export function AccountSettings({ user, organization, authEmail }: AccountSettin
     },
   })
 
-  function onProfileSubmit(_data: ProfileFormValues) {
+  async function onProfileSubmit(data: ProfileFormValues) {
+    setProfileError(null)
+    const result = await updateProfile({ name: data.name })
+    if ('error' in result) { setProfileError(result.error); return }
     setProfileSaved(true)
     setTimeout(() => setProfileSaved(false), 2000)
+    router.refresh()
   }
 
-  function onPrefsSubmit(_data: PreferencesFormValues) {
+  async function onPrefsSubmit(data: PreferencesFormValues) {
+    const result = await updateProfile({
+      name: userName,
+      weeklyHourGoal: parseInt(data.weeklyGoal, 10),
+      roundingInterval: data.roundingInterval as string,
+    })
+    if ('error' in result) return
     setPrefsSaved(true)
     setTimeout(() => setPrefsSaved(false), 2000)
+    router.refresh()
   }
 
   function onNotifSave() {
@@ -213,6 +229,10 @@ export function AccountSettings({ user, organization, authEmail }: AccountSettin
               <Input value={userEmail} disabled />
               <p className="text-xs text-muted-foreground">{t('profile.emailHint')}</p>
             </div>
+
+            {profileError && (
+              <p className="text-sm text-destructive">{profileError}</p>
+            )}
 
             <div className="flex items-center gap-2">
               <Button type="submit">{tc('save')}</Button>

@@ -11,9 +11,10 @@ import { ExpenseDialog } from '@/components/expenses/expense-dialog'
 
 interface ExpensesPageClientProps {
   expenses: Expense[]
+  clients: { id: string; name: string; isActive: boolean }[]
 }
 
-export function ExpensesPageClient({ expenses }: ExpensesPageClientProps) {
+export function ExpensesPageClient({ expenses, clients }: ExpensesPageClientProps) {
   const t = useTranslations('expenses')
   const [addDialogOpen, setAddDialogOpen] = useState(false)
 
@@ -46,7 +47,7 @@ export function ExpensesPageClient({ expenses }: ExpensesPageClientProps) {
             </Button>
           </div>
         ) : (
-          <ExpenseList expenses={expenses} />
+          <ExpenseList expenses={expenses} clients={clients} />
         )}
       </Card>
 
@@ -54,6 +55,7 @@ export function ExpensesPageClient({ expenses }: ExpensesPageClientProps) {
       <ExpenseDialog
         open={addDialogOpen}
         onOpenChange={setAddDialogOpen}
+        clients={clients}
       />
     </>
   )

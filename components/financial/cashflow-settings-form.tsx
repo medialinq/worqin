@@ -1,7 +1,11 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
+import { updateCashflowSettings } from '@/app/(dashboard)/financial/cashflow/actions'
+import { Check } from 'lucide-react'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -32,6 +36,11 @@ interface CashflowSettingsFormProps {
 
 export function CashflowSettingsForm({ settings }: CashflowSettingsFormProps) {
   const t = useTranslations('financial.cashflow.settings')
+  const router = useRouter()
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [saved, setSaved] = useState(false)
 
   const {
     register,
@@ -52,8 +61,21 @@ export function CashflowSettingsForm({ settings }: CashflowSettingsFormProps) {
 
   const vatFrequency = watch('vatFrequency')
 
-  function onSubmit(_data: CashflowSettingsFormValues) {
-    // Phase 1: mock — no-op
+  async function onSubmit(data: CashflowSettingsFormValues) {
+    setLoading(true)
+    setError(null)
+    const result = await updateCashflowSettings({
+      currentBalance: parseFloat(data.currentBalance),
+      monthlyFixedExpenses: parseFloat(data.monthlyFixedExpenses),
+      taxReservePercentage: parseInt(data.taxReservePercentage, 10),
+      safetyBuffer: parseFloat(data.safetyBuffer),
+      vatFrequency: data.vatFrequency as string,
+    })
+    setLoading(false)
+    if ('error' in result) { setError(result.error); return }
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+    router.refresh()
   }
 
   return (
@@ -139,10 +161,22 @@ export function CashflowSettingsForm({ settings }: CashflowSettingsFormProps) {
             </Select>
           </div>
 
+          {/* Error */}
+          {error && (
+            <p className="text-sm text-destructive">{error}</p>
+          )}
+
           {/* Save */}
-          <Button type="submit" className="w-full">
-            {t('save')}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button type="submit" className="w-full" disabled={loading}>
+              {t('save')}
+            </Button>
+            {saved && (
+              <span className="flex shrink-0 items-center gap-1 text-sm text-success">
+                <Check className="size-4" />
+              </span>
+            )}
+          </div>
         </form>
       </CardContent>
     </Card>

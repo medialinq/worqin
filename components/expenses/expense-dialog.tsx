@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { createExpense, updateExpense } from '@/app/(dashboard)/expenses/actions'
 import {
   Dialog,
   DialogContent,
@@ -28,7 +30,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { mockClients } from '@/lib/mock/clients'
 import type { Expense } from '@/lib/mock/types'
 
 const KM_RATE = 0.23
@@ -58,15 +59,20 @@ interface ExpenseDialogProps {
   open: boolean
   onOpenChange: (open: boolean) => void
   expense?: Expense
+  clients: { id: string; name: string; isActive: boolean }[]
 }
 
 function todayString(): string {
   return new Date().toISOString().split('T')[0]
 }
 
-export function ExpenseDialog({ open, onOpenChange, expense }: ExpenseDialogProps) {
+export function ExpenseDialog({ open, onOpenChange, expense, clients }: ExpenseDialogProps) {
   const t = useTranslations('expenses')
   const tc = useTranslations('common')
+  const router = useRouter()
+
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   const isEdit = !!expense
   const isMileage = expense?.type === 'MILEAGE'
@@ -161,26 +167,59 @@ export function ExpenseDialog({ open, onOpenChange, expense }: ExpenseDialogProp
     }
   }, [open, expense, receiptForm, mileageForm])
 
-  function onSubmitReceipt(_data: ReceiptFormValues) {
-    // Phase 1: mock — just close
+  async function onSubmitReceipt(data: ReceiptFormValues) {
+    setLoading(true)
+    setError(null)
+    const payload = {
+      type: 'RECEIPT' as const,
+      description: data.description,
+      amount: parseFloat(data.amount),
+      vatRate: parseFloat(data.vatRate),
+      date: data.date,
+      clientId: data.clientId || null,
+      projectId: data.projectId || null,
+    }
+    const result = expense
+      ? await updateExpense({ id: expense.id, ...payload })
+      : await createExpense(payload)
+    setLoading(false)
+    if ('error' in result) { setError(result.error); return }
     receiptForm.reset()
     onOpenChange(false)
+    router.refresh()
   }
 
-  function onSubmitMileage(_data: MileageFormValues) {
-    // Phase 1: mock — just close
+  async function onSubmitMileage(data: MileageFormValues) {
+    setLoading(true)
+    setError(null)
+    const payload = {
+      type: 'MILEAGE' as const,
+      description: `${data.from} \u2192 ${data.to}`,
+      amount: calculatedAmount,
+      vatRate: 0,
+      date: data.date,
+      clientId: data.clientId || null,
+      projectId: data.projectId || null,
+    }
+    const result = expense
+      ? await updateExpense({ id: expense.id, ...payload })
+      : await createExpense(payload)
+    setLoading(false)
+    if ('error' in result) { setError(result.error); return }
     mileageForm.reset()
     onOpenChange(false)
+    router.refresh()
   }
 
   function handleClose() {
     receiptForm.reset()
     mileageForm.reset()
     setFileSelected(false)
+    setError(null)
     onOpenChange(false)
   }
 
-  const activeClients = mockClients.filter((c) => c.isActive)
+  const activeClients = clients.filter((c) => c.isActive)
 
   return (
     <Dialog open={open} onOpenChange={(val) => { if (!val) handleClose() }}>
@@ -295,11 +334,15 @@ export function ExpenseDialog({ open, onOpenChange, expense }: ExpenseDialogProp
                 </div>
               </div>
 
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleClose}>
+                <Button type="button" variant="outline" onClick={handleClose} disabled={loading}>
                   {tc('cancel')}
                 </Button>
-                <Button type="submit">{tc('save')}</Button>
+                <Button type="submit" disabled={loading}>{tc('save')}</Button>
               </DialogFooter>
             </form>
           </TabsContent>
@@ -378,11 +421,15 @@ export function ExpenseDialog({ open, onOpenChange, expense }: ExpenseDialogProp
                 </Select>
               </div>
 
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+
               <DialogFooter>
-                <Button type="button" variant="outline" onClick={handleClose}>
+                <Button type="button" variant="outline" onClick={handleClose} disabled={loading}>
                   {tc('cancel')}
                 </Button>
-                <Button type="submit">{tc('save')}</Button>
+                <Button type="submit" disabled={loading}>{tc('save')}</Button>
               </DialogFooter>
             </form>
           </TabsContent>

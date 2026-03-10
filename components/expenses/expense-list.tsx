@@ -21,6 +21,7 @@ const KM_RATE = 0.23
 interface ExpenseListProps {
   expenses: Expense[]
   loading?: boolean
+  clients?: { id: string; name: string; isActive: boolean }[]
 }
 
 function getQuarter(dateStr: string): { q: number; year: number } {
@@ -66,7 +67,7 @@ export function ExpenseListSkeleton() {
   )
 }
 
-export function ExpenseList({ expenses, loading }: ExpenseListProps) {
+export function ExpenseList({ expenses, loading, clients = [] }: ExpenseListProps) {
   const t = useTranslations('expenses')
 
   // Determine available quarters from data
@@ -315,6 +316,7 @@ export function ExpenseList({ expenses, loading }: ExpenseListProps) {
         open={editDialogOpen}
         onOpenChange={setEditDialogOpen}
         expense={editExpense ?? undefined}
+        clients={clients}
       />
     </>
   )
