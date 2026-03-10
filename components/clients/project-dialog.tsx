@@ -1,9 +1,12 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -15,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { createProject, updateProject } from '@/app/(dashboard)/customers/[id]/actions'
 import type { Project } from '@/lib/mock/types'
 
 const projectSchema = z.object({
@@ -37,12 +41,15 @@ interface ProjectDialogProps {
 export function ProjectDialog({
   open,
   onOpenChange,
-  clientId: _clientId,
+  clientId,
   clientName,
   project,
 }: ProjectDialogProps) {
   const t = useTranslations('clients')
   const tc = useTranslations('common')
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const {
     register,
@@ -59,17 +66,41 @@ export function ProjectDialog({
     },
   })
 
-  function onSubmit(_data: ProjectFormValues) {
-    // Phase 1: just close dialog (mock data, no persistence)
+  async function onSubmit(data: ProjectFormValues) {
+    setIsSubmitting(true)
+    setServerError(null)
+
+    const payload = {
+      name: data.name,
+      description: data.description || undefined,
+      budgetHours: data.budgetHours ? parseFloat(data.budgetHours) : null,
+      hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : null,
+    }
+
+    const result = project
+      ? await updateProject({ id: project.id, ...payload })
+      : await createProject({ clientId, ...payload })
+
+    setIsSubmitting(false)
+
+    if ('error' in result) {
+      setServerError(result.error)
+      return
+    }
+
     reset()
     onOpenChange(false)
+    router.refresh()
   }
 
   return (
     <Dialog
       open={open}
       onOpenChange={(val) => {
-        if (!val) reset()
+        if (!val) {
+          reset()
+          setServerError(null)
+        }
         onOpenChange(val)
       }}
     >
@@ -136,18 +167,27 @@ export function ProjectDialog({
             </p>
           </div>
 
+          {serverError && (
+            <p className="text-sm text-destructive">{serverError}</p>
+          )}
+
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
+              disabled={isSubmitting}
               onClick={() => {
                 reset()
+                setServerError(null)
                 onOpenChange(false)
               }}
             >
               {tc('cancel')}
             </Button>
-            <Button type="submit">{tc('save')}</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {tc('save')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>

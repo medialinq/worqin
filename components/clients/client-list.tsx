@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Skeleton } from '@/components/ui/skeleton'
 import { ClientDialog } from './client-dialog'
+import { toggleFavorite as toggleFavoriteAction } from '@/app/(dashboard)/customers/actions'
 import type { Client, Project } from '@/lib/mock/types'
 
 interface ClientListProps {
@@ -51,9 +52,15 @@ export function ClientList({ clients, projects }: ClientListProps) {
       .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
   }, [clients, search])
 
-  function toggleFavorite(e: React.MouseEvent, clientId: string) {
+  async function toggleFavorite(e: React.MouseEvent, clientId: string) {
     e.stopPropagation()
+    const previous = favorites[clientId]
     setFavorites((prev) => ({ ...prev, [clientId]: !prev[clientId] }))
+
+    const result = await toggleFavoriteAction({ id: clientId })
+    if ('error' in result) {
+      setFavorites((prev) => ({ ...prev, [clientId]: previous }))
+    }
   }
 
   function renderClientRow(client: Client) {

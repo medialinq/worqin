@@ -1,9 +1,12 @@
 'use client'
 
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Loader2 } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -14,6 +17,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { createClient, updateClient } from '@/app/(dashboard)/customers/actions'
 import type { Client } from '@/lib/mock/types'
 
 const PRESET_COLORS = [
@@ -48,6 +52,9 @@ interface ClientDialogProps {
 export function ClientDialog({ open, onOpenChange, client }: ClientDialogProps) {
   const t = useTranslations('clients')
   const tc = useTranslations('common')
+  const router = useRouter()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [serverError, setServerError] = useState<string | null>(null)
 
   const {
     register,
@@ -71,10 +78,37 @@ export function ClientDialog({ open, onOpenChange, client }: ClientDialogProps) 
 
   const selectedColor = watch('color')
 
-  function onSubmit(_data: ClientFormValues) {
-    // Phase 1: just close dialog (mock data, no persistence)
-    reset()
-    onOpenChange(false)
+  async function onSubmit(data: ClientFormValues) {
+    setIsSubmitting(true)
+    setServerError(null)
+
+    const payload = {
+      name: data.name,
+      email: data.email || '',
+      color: data.color,
+      hourlyRate: data.hourlyRate ? parseFloat(data.hourlyRate) : null,
+      kmRate: data.kmRate ? parseFloat(data.kmRate) : null,
+      minimumMinutes: data.minimumMinutes ? parseInt(data.minimumMinutes, 10) : null,
+    }
+
+    try {
+      const result = client
+        ? await updateClient({ id: client.id, ...payload })
+        : await createClient(payload)
+
+      if ('error' in result) {
+        setServerError(result.error)
+        return
+      }
+
+      reset()
+      onOpenChange(false)
+      router.refresh()
+    } catch {
+      setServerError('An unexpected error occurred')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -185,18 +219,27 @@ export function ClientDialog({ open, onOpenChange, client }: ClientDialogProps) 
             </div>
           </div>
 
+          {serverError && (
+            <p className="text-sm text-destructive">{serverError}</p>
+          )}
+
           <DialogFooter>
             <Button
               type="button"
               variant="outline"
+              disabled={isSubmitting}
               onClick={() => {
                 reset()
+                setServerError(null)
                 onOpenChange(false)
               }}
             >
               {tc('cancel')}
             </Button>
-            <Button type="submit">{tc('save')}</Button>
+            <Button type="submit" disabled={isSubmitting}>
+              {isSubmitting && <Loader2 className="mr-2 size-4 animate-spin" />}
+              {tc('save')}
+            </Button>
           </DialogFooter>
         </form>
       </DialogContent>
