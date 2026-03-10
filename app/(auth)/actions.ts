@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { rateLimit } from '@/lib/rate-limit'
 import {
   loginSchema,
   registerSchema,
@@ -31,6 +32,9 @@ async function getOrigin() {
 export async function login(formData: { email: string; password: string }): Promise<ActionResult> {
   const parsed = loginSchema.safeParse(formData)
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
+  const { success: allowed } = rateLimit(`login:${parsed.data.email}`, 5, 60_000)
+  if (!allowed) return err('Too many attempts. Please try again later.')
 
   const supabase = await createClient()
 
@@ -70,6 +74,9 @@ export async function register(formData: {
   const parsed = registerSchema.safeParse(formData)
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
 
+  const { success: allowed } = rateLimit(`register:${parsed.data.email}`, 3, 60_000)
+  if (!allowed) return err('Too many attempts. Please try again later.')
+
   const supabase = await createClient()
   const origin = await getOrigin()
 
@@ -93,6 +100,9 @@ export async function register(formData: {
 export async function forgotPassword(formData: { email: string }): Promise<ActionResult> {
   const parsed = forgotPasswordSchema.safeParse(formData)
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
+  const { success: allowed } = rateLimit(`forgot:${parsed.data.email}`, 3, 300_000)
+  if (!allowed) return err('Too many attempts. Please try again later.')
 
   const supabase = await createClient()
   const origin = await getOrigin()
@@ -124,6 +134,9 @@ export async function resetPassword(formData: { password: string }): Promise<Act
 export async function resendVerification(email: string): Promise<ActionResult> {
   const parsed = forgotPasswordSchema.safeParse({ email })
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
+  const { success: allowed } = rateLimit(`resend:${parsed.data.email}`, 2, 300_000)
+  if (!allowed) return err('Too many attempts. Please try again later.')
 
   const supabase = await createClient()
   const origin = await getOrigin()

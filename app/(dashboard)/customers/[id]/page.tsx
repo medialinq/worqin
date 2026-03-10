@@ -13,14 +13,14 @@ interface PageProps {
 
 export default async function ClientDetailRoute({ params }: PageProps) {
   const { id } = await params
-  await getAuthContext()
+  const { organizationId } = await getAuthContext()
 
-  const client = await fetchClient(id)
+  const client = await fetchClient(id, organizationId)
   if (!client) notFound()
 
   const [projects, entries] = await Promise.all([
-    fetchProjectsByClient(id),
-    fetchTimeEntriesByClient(id),
+    fetchProjectsByClient(id, organizationId),
+    fetchTimeEntriesByClient(id, organizationId),
   ])
 
   return (

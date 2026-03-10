@@ -194,12 +194,13 @@ export async function fetchClients(organizationId: string): Promise<Client[]> {
   return (data ?? []).map(mapClient)
 }
 
-export async function fetchClient(clientId: string): Promise<Client | null> {
+export async function fetchClient(clientId: string, organizationId: string): Promise<Client | null> {
   const supabase = await createClient()
   const { data } = await supabase
     .from('clients')
     .select('*')
     .eq('id', clientId)
+    .eq('organization_id', organizationId)
     .maybeSingle()
   return data ? mapClient(data) : null
 }
@@ -214,12 +215,13 @@ export async function fetchProjects(organizationId: string): Promise<Project[]> 
   return (data ?? []).map(mapProject)
 }
 
-export async function fetchProjectsByClient(clientId: string): Promise<Project[]> {
+export async function fetchProjectsByClient(clientId: string, organizationId: string): Promise<Project[]> {
   const supabase = await createClient()
   const { data } = await supabase
     .from('projects')
     .select('*')
     .eq('client_id', clientId)
+    .eq('organization_id', organizationId)
     .order('name')
   return (data ?? []).map(mapProject)
 }
@@ -239,12 +241,13 @@ export async function fetchRecentTimeEntries(
   return (data ?? []).map(mapTimeEntry)
 }
 
-export async function fetchTimeEntriesByClient(clientId: string): Promise<TimeEntry[]> {
+export async function fetchTimeEntriesByClient(clientId: string, organizationId: string): Promise<TimeEntry[]> {
   const supabase = await createClient()
   const { data } = await supabase
     .from('time_entries')
     .select('*')
     .eq('client_id', clientId)
+    .eq('organization_id', organizationId)
     .order('started_at', { ascending: false })
   return (data ?? []).map(mapTimeEntry)
 }

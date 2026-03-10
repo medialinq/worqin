@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { getAuthContext } from '@/lib/auth'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import {
   createTimeEntrySchema,
   updateTimeEntrySchema,
@@ -106,7 +106,7 @@ export async function startTimer(raw: unknown): Promise<ActionResult<TimeEntry>>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/timeline')
   return ok(data as TimeEntry)
@@ -118,7 +118,7 @@ export async function stopTimer(raw: unknown): Promise<ActionResult<TimeEntry>> 
   const parsed = stopTimerSchema.safeParse(raw)
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
 
-  const { supabase, userId, profile } = await getAuthContext()
+  const { supabase, userId, organizationId, profile } = await getAuthContext()
   const { id } = parsed.data
 
   // Fetch the active entry (must belong to this user and be running)
@@ -146,6 +146,7 @@ export async function stopTimer(raw: unknown): Promise<ActionResult<TimeEntry>> 
       .from('clients')
       .select('minimum_minutes')
       .eq('id', entry.client_id)
+      .eq('organization_id', organizationId)
       .single()
 
     if (client?.minimum_minutes && billedMinutes < client.minimum_minutes) {
@@ -166,7 +167,7 @@ export async function stopTimer(raw: unknown): Promise<ActionResult<TimeEntry>> 
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/timeline')
   return ok(data as TimeEntry)
@@ -223,7 +224,7 @@ export async function updateTimeEntry(raw: unknown): Promise<ActionResult<TimeEn
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
   if (!data) return err('Time entry not found')
 
   revalidatePath('/timeline')
@@ -256,7 +257,7 @@ export async function deleteTimeEntry(raw: unknown): Promise<ActionResult<void>>
     .eq('id', id)
     .eq('user_id', userId)
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/timeline')
   return ok()
@@ -289,7 +290,7 @@ export async function toggleExportReady(raw: unknown): Promise<ActionResult<Time
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/timeline')
   return ok(data as TimeEntry)

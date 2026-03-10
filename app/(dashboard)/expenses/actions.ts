@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { getAuthContext } from '@/lib/auth'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import {
   createExpenseSchema,
   updateExpenseSchema,
@@ -52,7 +52,7 @@ export async function createExpense(raw: unknown): Promise<ActionResult<Expense>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/expenses')
   return ok(data as Expense)
@@ -74,7 +74,7 @@ export async function updateExpense(raw: unknown): Promise<ActionResult<Expense>
     .eq('id', id)
     .single()
 
-  if (fetchError) return err(fetchError.message)
+  if (fetchError) return dbErr(fetchError)
   if (!existing) return err('Expense not found')
   if (existing.user_id !== userId) return err('Not authorized')
   if (existing.exported_at) return err('Cannot update an exported expense')
@@ -98,7 +98,7 @@ export async function updateExpense(raw: unknown): Promise<ActionResult<Expense>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/expenses')
   return ok(data as Expense)
@@ -119,7 +119,7 @@ export async function deleteExpense(raw: unknown): Promise<ActionResult<void>> {
     .eq('id', parsed.data.id)
     .single()
 
-  if (fetchError) return err(fetchError.message)
+  if (fetchError) return dbErr(fetchError)
   if (!existing) return err('Expense not found')
   if (existing.user_id !== userId) return err('Not authorized')
   if (existing.exported_at) return err('Cannot delete an exported expense')
@@ -130,7 +130,7 @@ export async function deleteExpense(raw: unknown): Promise<ActionResult<void>> {
     .eq('id', parsed.data.id)
     .eq('user_id', userId)
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/expenses')
   return ok()
@@ -151,7 +151,7 @@ export async function toggleExportReady(raw: unknown): Promise<ActionResult<Expe
     .eq('id', parsed.data.id)
     .single()
 
-  if (fetchError) return err(fetchError.message)
+  if (fetchError) return dbErr(fetchError)
   if (!current) return err('Expense not found')
   if (current.user_id !== userId) return err('Not authorized')
 
@@ -164,7 +164,7 @@ export async function toggleExportReady(raw: unknown): Promise<ActionResult<Expe
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/expenses')
   return ok(data as Expense)

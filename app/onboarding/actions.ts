@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import {
   welcomeDataSchema,
   firstClientSchema,
@@ -79,7 +79,7 @@ export async function createFirstClient(data: {
     .select('id, name')
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   return ok(client!)
 }
@@ -97,7 +97,7 @@ export async function completeOnboarding(): Promise<ActionResult> {
     .update({ onboarded_at: new Date().toISOString() })
     .eq('id', user.id)
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   return ok()
 }
@@ -129,7 +129,7 @@ export async function startFirstTimer(clientId?: string): Promise<ActionResult> 
     type: 'BILLABLE',
   })
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   // Also mark as onboarded
   await supabase

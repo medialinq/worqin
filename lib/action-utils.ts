@@ -18,6 +18,21 @@ export function err(message: string): ActionResult<never> {
   return { error: message }
 }
 
+// Sanitize Supabase/PostgreSQL errors - never expose raw DB errors to client
+export function dbErr(error: { code?: string; message?: string }): ActionResult<never> {
+  // Log full error server-side for debugging
+  console.error('[DB Error]', error.code, error.message)
+
+  // Map known Postgres error codes to user-friendly messages
+  switch (error.code) {
+    case '23505': return err('This record already exists')
+    case '23503': return err('Referenced record not found')
+    case '42501': return err('Permission denied')
+    case 'PGRST116': return err('Record not found')
+    default: return err('Something went wrong. Please try again.')
+  }
+}
+
 // Auth context type for use in action files
 export type AuthContext = Awaited<ReturnType<typeof getAuthContext>>
 

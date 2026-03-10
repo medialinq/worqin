@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { getAuthContext } from '@/lib/auth'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import {
   createClientSchema,
   updateClientSchema,
@@ -49,7 +49,7 @@ export async function createClient(raw: unknown): Promise<ActionResult<Client>> 
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers')
   return ok(data as Client)
@@ -84,7 +84,7 @@ export async function updateClient(raw: unknown): Promise<ActionResult<Client>> 
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers')
   return ok(data as Client)
@@ -106,7 +106,7 @@ export async function archiveClient(raw: unknown): Promise<ActionResult<Client>>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers')
   return ok(data as Client)
@@ -128,7 +128,7 @@ export async function restoreClient(raw: unknown): Promise<ActionResult<Client>>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers')
   return ok(data as Client)
@@ -150,7 +150,7 @@ export async function toggleFavorite(raw: unknown): Promise<ActionResult<Client>
     .eq('organization_id', organizationId)
     .single()
 
-  if (fetchError) return err(fetchError.message)
+  if (fetchError) return dbErr(fetchError)
   if (!current) return err('Client not found')
 
   // Flip the flag
@@ -165,7 +165,7 @@ export async function toggleFavorite(raw: unknown): Promise<ActionResult<Client>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers')
   return ok(data as Client)

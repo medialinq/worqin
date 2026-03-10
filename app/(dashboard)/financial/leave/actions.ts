@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { getAuthContext } from '@/lib/auth'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import {
   createLeaveSchema,
   updateLeaveSchema,
@@ -46,7 +46,7 @@ export async function createLeave(raw: unknown): Promise<ActionResult<LeaveEntry
     if (error.code === '23505') {
       return err('Er is al een verlofregistratie voor deze datum')
     }
-    return err(error.message)
+    return dbErr(error)
   }
 
   revalidatePath('/financial/leave')
@@ -81,7 +81,7 @@ export async function updateLeave(raw: unknown): Promise<ActionResult<LeaveEntry
     if (error.code === '23505') {
       return err('Er is al een verlofregistratie voor deze datum')
     }
-    return err(error.message)
+    return dbErr(error)
   }
 
   revalidatePath('/financial/leave')
@@ -102,7 +102,7 @@ export async function deleteLeave(raw: unknown): Promise<ActionResult<void>> {
     .eq('id', parsed.data.id)
     .eq('user_id', userId)
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/financial/leave')
   return ok()

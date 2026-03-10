@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { getAuthContext } from '@/lib/auth'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import {
   updateProfileSchema,
   updateOrganizationSchema,
@@ -46,7 +46,7 @@ export async function updateProfile(
     .select('id, name, weekly_hour_goal, rounding_interval')
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/settings/account')
   return ok(data as Profile)
@@ -60,7 +60,12 @@ export async function updateOrganization(
   const parsed = updateOrganizationSchema.safeParse(raw)
   if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
 
-  const { supabase, organizationId } = await getAuthContext()
+  const { supabase, organizationId, profile } = await getAuthContext()
+
+  // Only OWNER or ADMIN can update organization settings
+  if (profile.role !== 'OWNER' && profile.role !== 'ADMIN') {
+    return err('Only organization owners can update organization settings')
+  }
 
   const { data, error } = await supabase
     .from('organizations')
@@ -72,7 +77,7 @@ export async function updateOrganization(
     .select('id, name')
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/settings/account')
   return ok(data as Organization)

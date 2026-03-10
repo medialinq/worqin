@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { getAuthContext } from '@/lib/auth'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import {
   createProjectSchema,
   updateProjectSchema,
@@ -57,7 +57,7 @@ export async function createProject(raw: unknown): Promise<ActionResult<Project>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers/[id]', 'page')
   return ok(data as Project)
@@ -90,7 +90,7 @@ export async function updateProject(raw: unknown): Promise<ActionResult<Project>
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers/[id]', 'page')
   return ok(data as Project)
@@ -112,7 +112,7 @@ export async function archiveProject(raw: unknown): Promise<ActionResult<Project
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/customers/[id]', 'page')
   return ok(data as Project)

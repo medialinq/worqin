@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache'
 import { getAuthContext } from '@/lib/auth'
-import { ok, err, type ActionResult } from '@/lib/action-utils'
+import { ok, err, dbErr, type ActionResult } from '@/lib/action-utils'
 import { updateCashflowSettingsSchema } from '@/lib/validations'
 
 // ── Types ────────────────────────────────────────────
@@ -45,7 +45,7 @@ export async function updateCashflowSettings(
     .select()
     .single()
 
-  if (error) return err(error.message)
+  if (error) return dbErr(error)
 
   revalidatePath('/financial/cashflow')
   return ok(data as CashflowSettings)
