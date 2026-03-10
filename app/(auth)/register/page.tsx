@@ -71,7 +71,7 @@ export default function RegisterPage() {
     setError(null)
     try {
       const result = await registerAction(data)
-      if (result?.error) {
+      if (result && 'error' in result) {
         setError(result.error)
       }
     } catch {

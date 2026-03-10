@@ -3,6 +3,13 @@
 import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
+import { ok, err, type ActionResult } from '@/lib/action-utils'
+import {
+  loginSchema,
+  registerSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
+} from '@/lib/validations'
 
 async function getOrigin() {
   const h = await headers()
@@ -13,17 +20,18 @@ async function getOrigin() {
   return process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
 }
 
-export async function login(formData: { email: string; password: string }) {
+export async function login(formData: { email: string; password: string }): Promise<ActionResult> {
+  const parsed = loginSchema.safeParse(formData)
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
   const supabase = await createClient()
 
   const { error } = await supabase.auth.signInWithPassword({
-    email: formData.email,
-    password: formData.password,
+    email: parsed.data.email,
+    password: parsed.data.password,
   })
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return err(error.message)
 
   // Check if user has completed onboarding
   const {
@@ -37,11 +45,7 @@ export async function login(formData: { email: string; password: string }) {
       .eq('id', user.id)
       .single()
 
-    if (!profile) {
-      redirect('/onboarding')
-    }
-
-    if (!profile.onboarded_at) {
+    if (!profile || !profile.onboarded_at) {
       redirect('/onboarding')
     }
   }
@@ -54,83 +58,83 @@ export async function register(formData: {
   email: string
   password: string
   company: string
-}) {
-  const supabase = await createClient()
+}): Promise<ActionResult> {
+  const parsed = registerSchema.safeParse(formData)
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
 
+  const supabase = await createClient()
   const origin = await getOrigin()
 
   const { error } = await supabase.auth.signUp({
-    email: formData.email,
-    password: formData.password,
+    email: parsed.data.email,
+    password: parsed.data.password,
     options: {
       data: {
-        name: formData.name,
-        company: formData.company,
+        name: parsed.data.name,
+        company: parsed.data.company,
       },
       emailRedirectTo: `${origin}/auth/callback`,
     },
   })
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return err(error.message)
 
-  redirect(`/verify?email=${encodeURIComponent(formData.email)}`)
+  redirect(`/verify?email=${encodeURIComponent(parsed.data.email)}`)
 }
 
-export async function forgotPassword(formData: { email: string }) {
-  const supabase = await createClient()
+export async function forgotPassword(formData: { email: string }): Promise<ActionResult> {
+  const parsed = forgotPasswordSchema.safeParse(formData)
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
 
+  const supabase = await createClient()
   const origin = await getOrigin()
 
-  const { error } = await supabase.auth.resetPasswordForEmail(formData.email, {
+  const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
     redirectTo: `${origin}/auth/callback?next=/reset-password`,
   })
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return err(error.message)
 
-  return { success: true }
+  return ok()
 }
 
-export async function resetPassword(formData: { password: string }) {
+export async function resetPassword(formData: { password: string }): Promise<ActionResult> {
+  const parsed = resetPasswordSchema.safeParse(formData)
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
   const supabase = await createClient()
 
   const { error } = await supabase.auth.updateUser({
-    password: formData.password,
+    password: parsed.data.password,
   })
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return err(error.message)
 
-  return { success: true }
+  return ok()
 }
 
-export async function resendVerification(email: string) {
-  const supabase = await createClient()
+export async function resendVerification(email: string): Promise<ActionResult> {
+  const parsed = forgotPasswordSchema.safeParse({ email })
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
 
+  const supabase = await createClient()
   const origin = await getOrigin()
 
   const { error } = await supabase.auth.resend({
     type: 'signup',
-    email,
+    email: parsed.data.email,
     options: {
       emailRedirectTo: `${origin}/auth/callback`,
     },
   })
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return err(error.message)
 
-  return { success: true }
+  return ok()
 }
 
 export async function signInWithProvider(provider: 'google' | 'azure') {
   const supabase = await createClient()
-
   const origin = await getOrigin()
 
   const { data, error } = await supabase.auth.signInWithOAuth({
@@ -140,9 +144,7 @@ export async function signInWithProvider(provider: 'google' | 'azure') {
     },
   })
 
-  if (error) {
-    return { error: error.message }
-  }
+  if (error) return err(error.message)
 
   if (data.url) {
     redirect(data.url)

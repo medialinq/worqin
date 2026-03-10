@@ -45,9 +45,9 @@ export default function ResetPasswordPage() {
     setError(null)
     try {
       const result = await resetPassword({ password: data.password })
-      if (result?.success) {
+      if (result && 'success' in result) {
         setSuccess(true)
-      } else if (result?.error) {
+      } else if (result && 'error' in result) {
         setError(result.error)
       }
     } catch {

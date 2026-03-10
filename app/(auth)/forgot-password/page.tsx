@@ -36,7 +36,7 @@ export default function ForgotPasswordPage() {
     setIsLoading(true)
     try {
       const result = await forgotPassword(data)
-      if (result?.success) {
+      if (result && 'success' in result) {
         setSent(true)
       }
     } catch {

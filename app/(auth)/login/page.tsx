@@ -41,7 +41,7 @@ export default function LoginPage() {
     setError(null)
     try {
       const result = await login(data)
-      if (result?.error) {
+      if (result && 'error' in result) {
         setError(t('errors.invalidCredentials'))
       }
     } catch {

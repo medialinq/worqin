@@ -430,16 +430,16 @@ export default function OnboardingPage() {
                 <StepClient
                   onNext={async (data) => {
                     const result = await createFirstClient(data)
-                    if (result?.client) {
-                      setClientName(result.client.name)
-                      setClientId(result.client.id)
+                    if ('success' in result && result.data) {
+                      setClientName(result.data.name)
+                      setClientId(result.data.id)
                     }
                     setStep(3)
                   }}
                   onUseDefault={async () => {
                     const result = await createFirstClient({ clientName: "Overig" })
-                    if (result?.client) {
-                      setClientId(result.client.id)
+                    if ('success' in result && result.data) {
+                      setClientId(result.data.id)
                     }
                     setClientName("Overig")
                     setStep(3)

@@ -1,19 +1,31 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { ok, err, type ActionResult } from '@/lib/action-utils'
+import {
+  welcomeDataSchema,
+  firstClientSchema,
+  startFirstTimerSchema,
+} from '@/lib/validations'
 
-export async function saveWelcomeData(data: { name: string; company: string }) {
+export async function saveWelcomeData(data: {
+  name: string
+  company: string
+}): Promise<ActionResult> {
+  const parsed = welcomeDataSchema.safeParse(data)
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) return { error: 'Not authenticated' }
+  if (!user) return err('Not authenticated')
 
   // Update user name
   await supabase
     .from('users')
-    .update({ name: data.name })
+    .update({ name: parsed.data.name })
     .eq('id', user.id)
 
   // Update organization name
@@ -26,24 +38,27 @@ export async function saveWelcomeData(data: { name: string; company: string }) {
   if (profile) {
     await supabase
       .from('organizations')
-      .update({ name: data.company })
+      .update({ name: parsed.data.company })
       .eq('id', profile.organization_id)
   }
 
-  return { success: true }
+  return ok()
 }
 
 export async function createFirstClient(data: {
   clientName: string
   clientEmail?: string
   clientRate?: string
-}) {
+}): Promise<ActionResult<{ id: string; name: string }>> {
+  const parsed = firstClientSchema.safeParse(data)
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) return { error: 'Not authenticated' }
+  if (!user) return err('Not authenticated')
 
   const { data: profile } = await supabase
     .from('users')
@@ -51,49 +66,52 @@ export async function createFirstClient(data: {
     .eq('id', user.id)
     .single()
 
-  if (!profile) return { error: 'No profile found' }
+  if (!profile) return err('No profile found')
 
   const { data: client, error } = await supabase
     .from('clients')
     .insert({
       organization_id: profile.organization_id,
-      name: data.clientName,
-      email: data.clientEmail || null,
-      hourly_rate: data.clientRate ? parseFloat(data.clientRate) : null,
+      name: parsed.data.clientName,
+      email: parsed.data.clientEmail || null,
+      hourly_rate: parsed.data.clientRate ? parseFloat(parsed.data.clientRate) : null,
     })
     .select('id, name')
     .single()
 
-  if (error) return { error: error.message }
+  if (error) return err(error.message)
 
-  return { success: true, client }
+  return ok(client!)
 }
 
-export async function completeOnboarding() {
+export async function completeOnboarding(): Promise<ActionResult> {
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) return { error: 'Not authenticated' }
+  if (!user) return err('Not authenticated')
 
   const { error } = await supabase
     .from('users')
     .update({ onboarded_at: new Date().toISOString() })
     .eq('id', user.id)
 
-  if (error) return { error: error.message }
+  if (error) return err(error.message)
 
-  return { success: true }
+  return ok()
 }
 
-export async function startFirstTimer(clientId?: string) {
+export async function startFirstTimer(clientId?: string): Promise<ActionResult> {
+  const parsed = startFirstTimerSchema.safeParse({ clientId })
+  if (!parsed.success) return err(parsed.error.issues[0]?.message ?? 'Validation failed')
+
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  if (!user) return { error: 'Not authenticated' }
+  if (!user) return err('Not authenticated')
 
   const { data: profile } = await supabase
     .from('users')
@@ -101,17 +119,17 @@ export async function startFirstTimer(clientId?: string) {
     .eq('id', user.id)
     .single()
 
-  if (!profile) return { error: 'No profile found' }
+  if (!profile) return err('No profile found')
 
   const { error } = await supabase.from('time_entries').insert({
     organization_id: profile.organization_id,
     user_id: user.id,
-    client_id: clientId || null,
+    client_id: parsed.data.clientId || null,
     started_at: new Date().toISOString(),
     type: 'BILLABLE',
   })
 
-  if (error) return { error: error.message }
+  if (error) return err(error.message)
 
   // Also mark as onboarded
   await supabase
@@ -119,5 +137,5 @@ export async function startFirstTimer(clientId?: string) {
     .update({ onboarded_at: new Date().toISOString() })
     .eq('id', user.id)
 
-  return { success: true }
+  return ok()
 }
