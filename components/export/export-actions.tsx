@@ -155,6 +155,8 @@ export function ExportActions({
         onOpenChange={setPdfOpen}
         timeEntries={timeEntries}
         expenses={expenses}
+        clients={clients}
+        projects={projects}
       />
 
       {/* Jortt Confirm Dialog */}
