@@ -77,6 +77,11 @@ export async function GET(request: NextRequest) {
       .eq('id', user.id)
       .single()
 
+    // Password reset: always follow the `next` param, skip profile redirect logic
+    if (next === '/reset-password') {
+      return response
+    }
+
     if (!profile) {
       // First login — create org + user via service role
       await createUserProfile(user)
