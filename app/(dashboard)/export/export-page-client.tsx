@@ -170,6 +170,8 @@ export function ExportPageClient({
       <ExportActions
         timeEntries={items.timeEntries}
         expenses={items.expenses}
+        clients={clientsList}
+        projects={projectsList}
         onExportResult={handleExportResult}
       />
     </div>

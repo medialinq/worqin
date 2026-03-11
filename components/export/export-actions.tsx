@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { PdfPreview } from './pdf-preview'
+import { markAsExported } from '@/app/(dashboard)/export/actions'
 import type { TimeEntry, Expense } from '@/lib/mock/types'
 
 type ExportResult = 'success' | 'error' | null
@@ -20,12 +21,16 @@ type ExportResult = 'success' | 'error' | null
 interface ExportActionsProps {
   timeEntries: TimeEntry[]
   expenses: Expense[]
+  clients: { id: string; name: string }[]
+  projects: { id: string; name: string; clientId: string }[]
   onExportResult: (result: ExportResult) => void
 }
 
 export function ExportActions({
   timeEntries,
   expenses,
+  clients,
+  projects,
   onExportResult,
 }: ExportActionsProps) {
   const t = useTranslations('export')
@@ -38,15 +43,68 @@ export function ExportActions({
   const hasItems = totalItems > 0
 
   function handleCsvDownload() {
+    const rows: string[] = []
+    rows.push(['Type', 'Datum', 'Omschrijving', 'Klant', 'Project', 'Uren', 'Tarief', 'Bedrag', 'BTW%'].join(';'))
+
+    for (const entry of timeEntries) {
+      const client = clients.find((c) => c.id === entry.clientId)
+      const project = projects.find((p) => p.id === entry.projectId)
+      const hours = entry.durationBilledMins != null
+        ? Math.round((entry.durationBilledMins / 60) * 100) / 100
+        : entry.durationMins != null
+          ? Math.round((entry.durationMins / 60) * 100) / 100
+          : 0
+      const rate = entry.hourlyRateSnapshot ?? 0
+      const amount = Math.round(hours * rate * 100) / 100
+      rows.push([
+        entry.type,
+        entry.startedAt.split('T')[0],
+        `"${(entry.description ?? '').replace(/"/g, '""')}"`,
+        client?.name ?? '',
+        project?.name ?? '',
+        hours.toString().replace('.', ','),
+        rate.toString().replace('.', ','),
+        amount.toString().replace('.', ','),
+        '',
+      ].join(';'))
+    }
+
+    for (const expense of expenses) {
+      const client = clients.find((c) => c.id === expense.clientId)
+      rows.push([
+        `Onkosten-${expense.type}`,
+        expense.date,
+        `"${expense.description.replace(/"/g, '""')}"`,
+        client?.name ?? '',
+        '',
+        '',
+        '',
+        expense.amount.toString().replace('.', ','),
+        (expense.vatRate ?? 0).toString().replace('.', ','),
+      ].join(';'))
+    }
+
+    const csv = rows.join('\n')
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `worqin-export-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
     setCsvNotice(true)
     setTimeout(() => setCsvNotice(false), 3000)
   }
 
-  function handleJorttExport() {
+  async function handleJorttExport() {
     setConfirmOpen(false)
-    // Mock: randomly succeed or partially fail
-    const random = Math.random()
-    if (random > 0.3) {
+    const result = await markAsExported({
+      timeEntryIds: timeEntries.map((e) => e.id),
+      expenseIds: expenses.map((e) => e.id),
+    })
+    if ('success' in result) {
       onExportResult('success')
     } else {
       onExportResult('error')

@@ -87,7 +87,24 @@ export default async function DashboardPage() {
           <KPICards stats={stats} />
 
           {/* AI Assistent */}
-          <AIBlock unconfirmedCount={unconfirmedCount} />
+          <AIBlock
+            unconfirmedCount={unconfirmedCount}
+            userName={firstName}
+            weekHours={stats.weekHours.current}
+            weekGoal={stats.weekHours.goal}
+            todayEvents={calendarEvents
+              .filter((e) => {
+                const d = new Date(e.startAt)
+                const now = new Date()
+                return (
+                  d.getFullYear() === now.getFullYear() &&
+                  d.getMonth() === now.getMonth() &&
+                  d.getDate() === now.getDate()
+                )
+              })
+              .map((e) => ({ title: e.title, startAt: e.startAt }))}
+            pendingTasks={tasks.map((t) => ({ title: t.title, dueAt: t.dueAt }))}
+          />
 
           {/* Today column */}
           <TodayColumn

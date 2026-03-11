@@ -31,6 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { useRouter } from 'next/navigation'
+import {
+  createTemplate,
+  updateTemplate,
+  deleteTemplate,
+  toggleTemplateFavorite,
+} from '@/app/(dashboard)/settings/templates/actions'
 import type { TimerTemplate, TimeEntryType } from '@/lib/mock/types'
 
 const PRESET_COLORS = [
@@ -106,6 +113,8 @@ export function TemplatesSettings({ initialTemplates, clients, projects }: Templ
   const [templates, setTemplates] = useState<TimerTemplate[]>(
     initialTemplates.map(toTimerTemplate)
   )
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
   const [dialogOpen, setDialogOpen] = useState(false)
   const [editingTemplate, setEditingTemplate] = useState<TimerTemplate | null>(null)
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null)
@@ -159,58 +168,40 @@ export function TemplatesSettings({ initialTemplates, clients, projects }: Templ
     setDialogOpen(true)
   }
 
-  function onSubmit(data: TemplateFormValues) {
-    if (editingTemplate) {
-      setTemplates((prev) =>
-        prev.map((tmpl) =>
-          tmpl.id === editingTemplate.id
-            ? {
-                ...tmpl,
-                name: data.name,
-                clientId: data.clientId || null,
-                projectId: data.projectId || null,
-                type: data.type as TimeEntryType,
-                defaultMins: data.defaultMins ? Number(data.defaultMins) : null,
-                color: data.color || null,
-              }
-            : tmpl
-        )
-      )
-    } else {
-      const newTemplate: TimerTemplate = {
-        id: `tmpl-new-${Date.now()}`,
-        organizationId: templates[0]?.organizationId ?? '',
-        userId: templates[0]?.userId ?? '',
-        name: data.name,
-        clientId: data.clientId || null,
-        projectId: data.projectId || null,
-        description: null,
-        type: data.type as TimeEntryType,
-        defaultMins: data.defaultMins ? Number(data.defaultMins) : null,
-        color: data.color || null,
-        isFavorite: false,
-        usageCount: 0,
-        lastUsedAt: null,
-        createdAt: new Date().toISOString(),
-      }
-      setTemplates((prev) => [...prev, newTemplate])
+  async function onSubmit(data: TemplateFormValues) {
+    setLoading(true)
+    const payload = {
+      name: data.name,
+      clientId: data.clientId || null,
+      projectId: data.projectId || null,
+      type: data.type,
+      description: undefined,
     }
+    const result = editingTemplate
+      ? await updateTemplate({ id: editingTemplate.id, ...payload })
+      : await createTemplate(payload)
+    setLoading(false)
+    if ('error' in result) return
     form.reset()
     setDialogOpen(false)
     setEditingTemplate(null)
+    router.refresh()
   }
 
-  function handleDelete(id: string) {
-    setTemplates((prev) => prev.filter((tmpl) => tmpl.id !== id))
+  async function handleDelete(id: string) {
+    await deleteTemplate(id)
     setDeleteConfirmId(null)
+    router.refresh()
   }
 
-  function toggleFavorite(id: string) {
+  async function toggleFavorite(id: string) {
     setTemplates((prev) =>
       prev.map((tmpl) =>
         tmpl.id === id ? { ...tmpl, isFavorite: !tmpl.isFavorite } : tmpl
       )
     )
+    await toggleTemplateFavorite(id)
+    router.refresh()
   }
 
   function getClientName(clientId: string | null): string | undefined {
@@ -470,7 +461,7 @@ export function TemplatesSettings({ initialTemplates, clients, projects }: Templ
               >
                 {tc('cancel')}
               </Button>
-              <Button type="submit">{tc('save')}</Button>
+              <Button type="submit" disabled={loading}>{tc('save')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
