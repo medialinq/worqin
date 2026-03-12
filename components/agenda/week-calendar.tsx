@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useTranslations } from "next-intl"
 import {
   startOfWeek,
@@ -25,11 +25,10 @@ import { TokenAlarm } from "./token-alarm"
 import { AccountSelector } from "./account-selector"
 import type { CalendarEvent, CalendarConnection, Client } from "@/lib/mock/types"
 
-// Time slots from 07:00 to 22:00
-const START_HOUR = 7
-const END_HOUR = 22
+const START_HOUR = 0
+const END_HOUR = 24
 const TOTAL_HOURS = END_HOUR - START_HOUR
-const SLOT_HEIGHT = 64 // px per hour
+const SLOT_HEIGHT = 56 // px per hour
 
 const DAY_KEYS = ["mon", "tue", "wed", "thu", "fri", "sat", "sun"] as const
 
@@ -44,6 +43,14 @@ export function WeekCalendar({ events: initialEvents, connections, clients }: We
   const tDays = useTranslations("timer.dayLabels")
 
   const [currentDate, setCurrentDate] = useState(new Date())
+  const scrollRef = useRef<HTMLDivElement>(null)
+
+  // Auto-scroll to 7:00 on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = 7 * SLOT_HEIGHT
+    }
+  }, [])
   const [events, setEvents] = useState(initialEvents)
   const [confirmEvent, setConfirmEvent] = useState<CalendarEvent | null>(null)
   const [confirmOpen, setConfirmOpen] = useState(false)
@@ -204,10 +211,10 @@ export function WeekCalendar({ events: initialEvents, connections, clients }: We
       </div>
 
       {/* Calendar grid */}
-      <div className="overflow-x-auto overflow-y-hidden rounded-xl border bg-card">
+      <div className="overflow-x-auto rounded-xl border bg-card">
         <div className="min-w-[700px]">
-          {/* Day header row */}
-          <div className="grid grid-cols-[60px_repeat(7,1fr)] border-b">
+          {/* Day header row — sticky so it stays visible while scrolling */}
+          <div className="sticky top-0 z-10 grid grid-cols-[60px_repeat(7,1fr)] border-b bg-card">
             <div className="p-2" />
             {weekDays.map((day, i) => (
               <div
@@ -232,7 +239,8 @@ export function WeekCalendar({ events: initialEvents, connections, clients }: We
             ))}
           </div>
 
-          {/* Time grid */}
+          {/* Time grid — scrollable, shows full 24h */}
+          <div ref={scrollRef} className="max-h-[600px] overflow-y-auto">
           <div className="relative grid grid-cols-[60px_repeat(7,1fr)]">
             {/* Time labels */}
             <div className="relative">
@@ -297,6 +305,7 @@ export function WeekCalendar({ events: initialEvents, connections, clients }: We
               )
             })}
           </div>
+          </div>{/* end scroll wrapper */}
         </div>
       </div>
 
