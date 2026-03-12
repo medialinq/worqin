@@ -81,8 +81,10 @@ export async function syncCalendarEvents(connectionId: string): Promise<{
     const accessToken = await ensureFreshToken(connection as CalendarConnection)
 
     const now = new Date()
+    // Sync from 7 days back so events earlier this week are always included
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
     const thirtyDaysLater = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)
-    const timeMin = now.toISOString()
+    const timeMin = sevenDaysAgo.toISOString()
     const timeMax = thirtyDaysLater.toISOString()
 
     let rows: {
@@ -95,14 +97,23 @@ export async function syncCalendarEvents(connectionId: string): Promise<{
       is_recurring: boolean
     }[]
 
+    // All-day events from Google use date-only strings (e.g. "2026-03-13").
+    // Storing as UTC midnight causes them to appear on the previous day in CET.
+    // Fix: store as noon UTC so local date is always correct for UTC-11..UTC+12.
+    const toTimestamp = (dateOrDateTime: string | undefined, fallback: string) => {
+      if (!dateOrDateTime) return fallback
+      if (dateOrDateTime.includes('T') || dateOrDateTime.includes('Z')) return dateOrDateTime
+      return `${dateOrDateTime}T12:00:00Z`
+    }
+
     if (connection.provider === 'GOOGLE') {
       const events = await fetchGoogleEvents(accessToken, timeMin, timeMax)
       rows = events.map((e: GoogleCalendarEvent) => ({
         connection_id: connectionId,
         provider_event_id: e.id,
         title: e.summary || '(No title)',
-        start_at: e.start.dateTime || e.start.date || timeMin,
-        end_at: e.end.dateTime || e.end.date || timeMax,
+        start_at: toTimestamp(e.start.dateTime || e.start.date, timeMin),
+        end_at: toTimestamp(e.end.dateTime || e.end.date, timeMax),
         location: e.location || null,
         is_recurring: !!e.recurringEventId,
       }))

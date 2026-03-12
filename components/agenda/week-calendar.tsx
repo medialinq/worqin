@@ -25,9 +25,9 @@ import { TokenAlarm } from "./token-alarm"
 import { AccountSelector } from "./account-selector"
 import type { CalendarEvent, CalendarConnection, Client } from "@/lib/mock/types"
 
-// Time slots from 08:00 to 18:00
-const START_HOUR = 8
-const END_HOUR = 18
+// Time slots from 07:00 to 22:00
+const START_HOUR = 7
+const END_HOUR = 22
 const TOTAL_HOURS = END_HOUR - START_HOUR
 const SLOT_HEIGHT = 64 // px per hour
 
