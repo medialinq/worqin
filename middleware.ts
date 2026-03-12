@@ -1,5 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
+import { verifyAdminSessionToken, ADMIN_COOKIE_NAME } from '@/lib/admin/session'
 
 // Validate origin against allowed hosts to prevent open redirect via header spoofing
 function getSafeOrigin(request: NextRequest): string {
@@ -20,6 +21,21 @@ function getSafeOrigin(request: NextRequest): string {
 }
 
 export async function middleware(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+
+  // Admin routes — separate auth, checked before Supabase auth
+  if (pathname.startsWith('/admin')) {
+    if (pathname === '/admin/login') {
+      return NextResponse.next()
+    }
+    const token = request.cookies.get(ADMIN_COOKIE_NAME)?.value
+    const isValidAdmin = token ? verifyAdminSessionToken(token) : false
+    if (!isValidAdmin) {
+      return NextResponse.redirect(new URL('/admin/login', request.url))
+    }
+    return NextResponse.next()
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
@@ -52,8 +68,6 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const pathname = request.nextUrl.pathname
-
   // Public routes — no auth required
   // SECURITY: Only specific routes are public, not all /api/* routes
   const isPublicRoute =
@@ -64,7 +78,8 @@ export async function middleware(request: NextRequest) {
     pathname.startsWith('/reset-password') ||
     pathname.startsWith('/verify') ||
     pathname.startsWith('/auth/callback') ||
-    pathname.startsWith('/api/webhooks')
+    pathname.startsWith('/api/webhooks') ||
+    pathname.startsWith('/api/admin/login')
 
   const origin = getSafeOrigin(request)
 
