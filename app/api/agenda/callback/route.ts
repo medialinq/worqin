@@ -11,17 +11,21 @@ export async function GET(request: NextRequest) {
   const state = request.nextUrl.searchParams.get('state')
   const error = request.nextUrl.searchParams.get('error')
 
+  // Use NEXT_PUBLIC_SITE_URL to avoid localhost redirect behind Traefik proxy
+  const siteUrl =
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    `${request.headers.get('x-forwarded-proto') ?? 'https'}://${request.headers.get('x-forwarded-host') ?? request.nextUrl.host}`
+
+  const redirect = (path: string) =>
+    NextResponse.redirect(`${siteUrl}${path}`)
+
   // User denied access
   if (error) {
-    return NextResponse.redirect(
-      new URL('/settings/calendar?error=denied', request.url),
-    )
+    return redirect('/settings/calendar?error=denied')
   }
 
   if (!code || !state) {
-    return NextResponse.redirect(
-      new URL('/settings/calendar?error=invalid', request.url),
-    )
+    return redirect('/settings/calendar?error=invalid')
   }
 
   // Verify CSRF state
@@ -30,9 +34,7 @@ export async function GET(request: NextRequest) {
   cookieStore.delete('agenda_oauth_state')
 
   if (!storedState) {
-    return NextResponse.redirect(
-      new URL('/settings/calendar?error=expired', request.url),
-    )
+    return redirect('/settings/calendar?error=expired')
   }
 
   const [provider, expectedState] = storedState.split(':')
@@ -40,9 +42,7 @@ export async function GET(request: NextRequest) {
     state !== expectedState ||
     (provider !== 'GOOGLE' && provider !== 'MICROSOFT')
   ) {
-    return NextResponse.redirect(
-      new URL('/settings/calendar?error=csrf', request.url),
-    )
+    return redirect('/settings/calendar?error=csrf')
   }
 
   // Auth check
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser()
   if (!user) {
-    return NextResponse.redirect(new URL('/login', request.url))
+    return redirect('/login')
   }
 
   // Get user's organization
@@ -62,15 +62,10 @@ export async function GET(request: NextRequest) {
     .single()
 
   if (!profile) {
-    return NextResponse.redirect(
-      new URL('/settings/calendar?error=no_profile', request.url),
-    )
+    return redirect('/settings/calendar?error=no_profile')
   }
 
   try {
-    const siteUrl =
-      process.env.NEXT_PUBLIC_SITE_URL ||
-      `${request.nextUrl.protocol}//${request.nextUrl.host}`
     const redirectUri = `${siteUrl}/api/agenda/callback`
 
     // Exchange code for tokens (provider-specific)
@@ -127,13 +122,9 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    return NextResponse.redirect(
-      new URL('/settings/calendar?success=connected', request.url),
-    )
+    return redirect('/settings/calendar?success=connected')
   } catch (err) {
     console.error('[Agenda Callback Error]', err)
-    return NextResponse.redirect(
-      new URL('/settings/calendar?error=exchange_failed', request.url),
-    )
+    return redirect('/settings/calendar?error=exchange_failed')
   }
 }
