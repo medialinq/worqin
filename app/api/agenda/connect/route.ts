@@ -40,10 +40,18 @@ export async function GET(request: NextRequest) {
   const redirectUri = `${siteUrl}/api/agenda/callback`
 
   // Generate provider-specific auth URL
-  const authUrl =
-    provider === 'GOOGLE'
-      ? getGoogleAuthUrl(redirectUri, state)
-      : getMicrosoftAuthUrl(redirectUri, state)
+  let authUrl: string
+  try {
+    authUrl =
+      provider === 'GOOGLE'
+        ? getGoogleAuthUrl(redirectUri, state)
+        : getMicrosoftAuthUrl(redirectUri, state)
+  } catch (e) {
+    console.error('[Agenda Connect Error]', e)
+    return NextResponse.redirect(
+      new URL('/settings/calendar?error=not_configured', request.url),
+    )
+  }
 
   return NextResponse.redirect(authUrl)
 }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
   BookOpen,
@@ -47,6 +47,9 @@ interface AgendaIntegration {
 export function AgendaSettings({ connections }: AgendaSettingsProps) {
   const t = useTranslations('settings.integrations')
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const urlError = searchParams.get('error')
+  const urlSuccess = searchParams.get('success')
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
 
   const googleConn = connections.find((c) => c.provider === 'GOOGLE')
@@ -129,6 +132,24 @@ export function AgendaSettings({ connections }: AgendaSettingsProps) {
 
   return (
     <div className="max-w-4xl space-y-4">
+      {urlError && (
+        <div className="flex items-center gap-2 rounded-lg border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
+          <AlertCircle className="size-4 shrink-0" />
+          {urlError === 'not_configured'
+            ? 'Agenda-koppeling is niet geconfigureerd. Neem contact op met de beheerder.'
+            : urlError === 'denied'
+            ? 'Toegang geweigerd. Probeer opnieuw.'
+            : urlError === 'expired'
+            ? 'Sessie verlopen. Probeer opnieuw.'
+            : 'Er is iets misgegaan. Probeer opnieuw.'}
+        </div>
+      )}
+      {urlSuccess === 'connected' && (
+        <div className="flex items-center gap-2 rounded-lg border border-success/30 bg-success/10 px-4 py-3 text-sm text-success">
+          <CheckCircle2 className="size-4 shrink-0" />
+          Agenda succesvol gekoppeld.
+        </div>
+      )}
       {/* Agenda connections */}
       <Card className="p-6">
         <CardHeader className="p-0 pb-4">
