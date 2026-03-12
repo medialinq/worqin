@@ -121,40 +121,40 @@
 
 ---
 
-## Fase 2 — Backend
+## Fase 2 — Backend ✅
 
-- [ ] Supabase projecten aanmaken (worqin-app + worqin-admin)
-- [ ] Schema migraties uitvoeren (TECH.md sectie 4)
-- [ ] RLS policies verifiëren op alle tabellen
-- [ ] `lib/supabase/server.ts` + `client.ts` + `middleware.ts`
-- [ ] Types genereren via `supabase gen types`
-- [ ] Supabase Auth: e-mail + Google OAuth
-- [ ] Onboarding flow end-to-end
-- [ ] Time Tracker: start/stop, persisteren, tijdlijn live
-- [ ] Klanten + Projecten CRUD
-- [ ] 1.225u berekening live (direct + indirect + verlof)
-- [ ] Cashflow voorspelling live
-- [ ] Google Calendar koppeling
-- [ ] Einde-dag samenvatting API
-- [ ] Onkosten + kilometers
-- [ ] Supabase Storage voor bonnetjes
-- [ ] Microsoft OAuth login
-- [ ] Security audit (security-engineer)
+- [x] Supabase projecten aanmaken (worqin-app + worqin-admin)
+- [x] Schema migraties uitvoeren (TECH.md sectie 4)
+- [x] RLS policies verifiëren op alle tabellen
+- [x] `lib/supabase/server.ts` + `client.ts` + `middleware.ts`
+- [x] Types genereren via `supabase gen types`
+- [x] Supabase Auth: e-mail + Google OAuth
+- [x] Onboarding flow end-to-end
+- [x] Time Tracker: start/stop, persisteren, tijdlijn live
+- [x] Klanten + Projecten CRUD
+- [x] 1.225u berekening live (direct + indirect + verlof)
+- [x] Cashflow voorspelling live
+- [x] Google Calendar koppeling
+- [x] Einde-dag samenvatting API
+- [x] Onkosten + kilometers
+- [x] Supabase Storage voor bonnetjes
+- [x] Microsoft OAuth login
+- [x] Security audit (security-engineer)
 
 ---
 
 ## Fase 3 — Integraties & Admin
 
 - [ ] Jortt OAuth koppeling (export flow)
-- [ ] Admin module: klantenoverzicht + detail
+- [x] Admin module: klantenoverzicht + detail + plan management
 - [ ] Admin auth: tweede Supabase project + TOTP 2FA
 - [ ] Mollie billing + free trial
-- [ ] PDF + CSV export
+- [x] PDF + CSV export (real PDF via print, CSV download)
 - [ ] Compliance dashboard live (Wet DBA score)
 - [ ] Microsoft Outlook koppeling
-- [ ] Timer templates CRUD + start-actie live
+- [x] Timer templates CRUD + start-actie live
 - [ ] Effectief uurtarief analyse live
-- [ ] AI: dagstart-briefing + omschrijving genereren
+- [x] AI: dagstart-briefing + omschrijving genereren
 - [ ] AI: projectherkenning + billable classificatie
 - [ ] Security audit voor launch
 

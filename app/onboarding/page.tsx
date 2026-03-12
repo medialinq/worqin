@@ -363,11 +363,22 @@ export default function OnboardingPage() {
   const progressValue = (step / TOTAL_STEPS) * 100
 
   const completeOnboarding = useCallback(async (withTimer?: boolean) => {
-    if (withTimer) {
-      await startFirstTimer(clientId)
-    } else {
-      await completeOnboardingAction()
+    const result = withTimer
+      ? await startFirstTimer(clientId)
+      : await completeOnboardingAction()
+
+    if (!("success" in result)) {
+      console.error("Failed to complete onboarding:", result.error)
+      // Retry once — session may need to refresh after initial login
+      const retry = withTimer
+        ? await startFirstTimer(clientId)
+        : await completeOnboardingAction()
+      if (!("success" in retry)) {
+        // Still failed — redirect anyway so user isn't stuck, but log it
+        console.error("Onboarding completion retry failed:", retry.error)
+      }
     }
+
     setShowConfetti(true)
     setTimeout(() => {
       router.push("/dashboard")

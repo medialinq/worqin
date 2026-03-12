@@ -88,11 +88,21 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(`${origin}/login`)
   }
 
-  // Redirect logged-in users away from auth pages (not onboarding)
+  // Redirect logged-in users away from auth pages
   if (
     user &&
     (pathname.startsWith('/login') || pathname.startsWith('/register'))
   ) {
+    // Check onboarding status to avoid sending non-onboarded users to dashboard
+    const { data: profile } = await supabase
+      .from('users')
+      .select('onboarded_at')
+      .eq('id', user.id)
+      .single()
+
+    if (!profile || !profile.onboarded_at) {
+      return NextResponse.redirect(`${origin}/onboarding`)
+    }
     return NextResponse.redirect(`${origin}/dashboard`)
   }
 
