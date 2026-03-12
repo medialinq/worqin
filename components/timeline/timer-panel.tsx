@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useTranslations } from 'next-intl'
 import { Play, Square, Sparkles, Check, X } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
@@ -57,16 +57,18 @@ export function TimerPanel({ activeTimer, clients, projects }: TimerPanelProps) 
   const [elapsed, setElapsed] = useState(() => calcElapsed())
   const [showAiSuggestion, setShowAiSuggestion] = useState(false)
   const [timerStopped, setTimerStopped] = useState(false)
-  const [prevTimerId, setPrevTimerId] = useState<string | null>(activeTimer?.id ?? null)
+  const prevTimerIdRef = useRef<string | null | undefined>(activeTimer?.id)
 
-  // Reset stopped/suggestion state when the active timer changes
-  if (activeTimer?.id !== prevTimerId) {
-    setPrevTimerId(activeTimer?.id ?? null)
-    if (activeTimer) {
-      setTimerStopped(false)
-      setShowAiSuggestion(false)
+  // Reset stopped/suggestion state when the active timer changes (via ref, not state)
+  useEffect(() => {
+    if (activeTimer?.id !== prevTimerIdRef.current) {
+      prevTimerIdRef.current = activeTimer?.id
+      if (activeTimer) {
+        setTimerStopped(false)
+        setShowAiSuggestion(false)
+      }
     }
-  }
+  }, [activeTimer])
 
   useEffect(() => {
     if (!activeTimer) return

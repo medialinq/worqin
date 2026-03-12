@@ -4,7 +4,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import {
-  Calendar,
   BookOpen,
   CheckCircle2,
   XCircle,
@@ -14,6 +13,8 @@ import {
   Link2,
   Loader2,
 } from 'lucide-react'
+import { GoogleCalendarIcon } from '@/components/icons/google-calendar-icon'
+import { MicrosoftOutlookIcon } from '@/components/icons/microsoft-outlook-icon'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -55,7 +56,7 @@ export function AgendaSettings({ connections }: AgendaSettingsProps) {
     {
       provider: 'GOOGLE',
       label: t('googleCalendar'),
-      icon: <Calendar className="size-5" />,
+      icon: <GoogleCalendarIcon className="size-5" />,
       state: googleConn?.isActive ? 'connected' : (googleConn ? 'error' : 'disconnected') as ConnectionState,
       email: googleConn?.accountEmail,
       lastSync: googleConn?.lastSyncedAt ?? undefined,
@@ -64,7 +65,7 @@ export function AgendaSettings({ connections }: AgendaSettingsProps) {
     {
       provider: 'MICROSOFT',
       label: t('outlook'),
-      icon: <Calendar className="size-5" />,
+      icon: <MicrosoftOutlookIcon className="size-5" />,
       state: microsoftConn?.isActive ? 'connected' : (microsoftConn ? 'error' : 'disconnected') as ConnectionState,
       email: microsoftConn?.accountEmail,
       lastSync: microsoftConn?.lastSyncedAt ?? undefined,

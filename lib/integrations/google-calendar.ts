@@ -7,8 +7,8 @@ const SCOPES =
   'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.email'
 
 function getCredentials() {
-  const clientId = process.env.GOOGLE_CLIENT_ID
-  const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+  const clientId = process.env.GOOGLE_CALENDAR_CLIENT_ID
+  const clientSecret = process.env.GOOGLE_CALENDAR_CLIENT_SECRET
   if (!clientId || !clientSecret) {
     throw new Error('Google Calendar credentials not configured')
   }
